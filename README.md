@@ -113,4 +113,4 @@ If you reference this framework in academic or professional work:
 
 ## Contact
 
-Vahid Hakami — [your email] — [your LinkedIn]
+Vahid Hakami — vd.hakami@gmail.com — https://uk.linkedin.com/in/vahidhakami
