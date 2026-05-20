@@ -1,5 +1,9 @@
 # DIVE Framework™
 
+<p align="center">
+  <img src="assets/DIVE-Logo.svg" alt="DIVE Framework Logo" width="300">
+</p>
+
 > **Diagnose → Iterate → Validate → Evolve**
 >
 > A project management methodology purpose-built for Artificial Intelligence and Machine Learning initiatives.
