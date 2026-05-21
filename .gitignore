@@ -1,4 +1,6 @@
-# Word documents — kept offline until copyright registration
+# Templates and governance — kept offline until copyright registration
+templates/
+governance/
 *.docx
 
 # Generated files

@@ -62,27 +62,10 @@ Traditional project management frameworks (PMBOK, PRINCE2, Agile) assume determi
 ├── README.md                    # This file
 ├── LICENSE                      # CC BY-ND 4.0
 ├── framework-reference.md       # Complete methodology (principles + lifecycle)
-├── templates/
-│   ├── T1-AI-Project-Charter.md
-│   ├── T2-Data-Inventory-Quality-Report.md
-│   ├── T3-Metric-Contract.md
-│   ├── T4-Experiment-Log.md
-│   ├── T5-Track-Comparison-Dashboard.md
-│   ├── T6-Model-Evaluation-Report.md
-│   ├── T7-AI-Risk-Register.md
-│   ├── T8-Model-Governance-Card.md
-│   ├── T9-AI-Ethics-Screening.md
-│   ├── T10-Deployment-Manifest.md
-│   ├── T11-Drift-Alert-Log.md
-│   ├── T12-Phase-Gate-Review.md
-│   ├── T13-Retrospective.md
-│   └── T14-Compute-Budget-Tracker.md
-├── governance/
-│   ├── G1-AI-Governance-Board-Charter.md
-│   ├── G2-Ethical-AI-Review-Protocol.md
-│   ├── G3-Model-Drift-Response-Protocol.md
-│   ├── G4-Audit-Trail-Policy.md
-│   └── G5-Complexity-Tier-Matrix.md
+├── DIVE-Implementation-Guide.html # Interactive implementation guide
+├── DIVE-One-Pager.html / .pdf   # Single-page visual summary
+├── DIVE-Presentation.pptx       # Slide deck
+├── DIVE-White-Paper.pdf         # Academic white paper (SSRN: 6806018)
 └── assets/
     ├── DIVE-Logo.svg
     └── DIVE-Logo-Horizontal.svg
@@ -93,9 +76,9 @@ Traditional project management frameworks (PMBOK, PRINCE2, Agile) assume determi
 ## Getting Started
 
 1. **Read the framework** — start with `framework-reference.md`
-2. **Use the templates** — navigate to `templates/` and begin with T1 (Project Charter)
-3. **Apply governance** — refer to `governance/` for oversight structures
-4. **Adapt to your context** — DIVE is designed to scale; use the Tier Matrix (G5) to determine depth
+2. **Explore the interactive guide** — open `DIVE-Implementation-Guide.html` for phase walkthroughs, diagrams, and checklist
+3. **Download the slide deck** — `DIVE-Presentation.pptx` for team onboarding
+4. **Read the white paper** — `DIVE-White-Paper.pdf` or SSRN Abstract ID: 6806018
 
 ---
 
