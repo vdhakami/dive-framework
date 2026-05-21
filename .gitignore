@@ -1,8 +1,4 @@
-# Templates and governance — kept offline until copyright registration
-templates/
-governance/
-*.docx
-
-# Generated files
-*.pyc
-__pycache__/
+# All files kept locally until SSRN publication
+/*
+!/README.md
+!.gitignore
