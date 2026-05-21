@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIVE Framework — One-Pager</title>
+<style>
+  @page { size: A4; margin: 0; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 9.5pt; color: #1a1a2e; line-height: 1.3; width: 210mm; height: 297mm; overflow: hidden; }
+  .page { width: 210mm; height: 297mm; padding: 12mm 14mm; display: flex; flex-direction: column; position: relative; }
+  .header { text-align: center; margin-bottom: 3mm; }
+  .header h1 { font-size: 22pt; font-weight: 800; letter-spacing: 1px; color: #1a1a2e; }
+  .header .subtitle { font-size: 11pt; color: #006DAA; font-weight: 600; letter-spacing: 2px; margin-top: 1mm; }
+  .header .tagline { font-size: 8pt; color: #666; margin-top: 1mm; }
+  .grid { display: flex; gap: 3mm; flex: 1; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 2mm; }
+  .card { background: #E8E8E8; border-radius: 3mm; padding: 2.5mm 3mm; flex: 1; }
+  .card h2 { font-size: 10pt; font-weight: 700; color: #006DAA; margin-bottom: 1mm; border-bottom: 1.5px solid #006DAA; padding-bottom: 0.5mm; }
+  .card ul { list-style: none; padding: 0; }
+  .card ul li { font-size: 7.5pt; padding: 0.3mm 0 0.3mm 3mm; position: relative; color: #333; }
+  .card ul li::before { content: "â–¶"; position: absolute; left: 0; color: #006DAA; font-size: 6pt; }
+  .principle { display: flex; align-items: center; gap: 1.5mm; padding: 0.8mm 0; border-bottom: 1px solid #ddd; }
+  .principle:last-child { border-bottom: none; }
+  .principle .num { background: #1a1a2e; color: #fff; border-radius: 50%; width: 5mm; height: 5mm; display: flex; align-items: center; justify-content: center; font-size: 7pt; font-weight: 700; flex-shrink: 0; }
+  .principle .text { font-size: 7.5pt; color: #333; }
+  .lifecycle { display: flex; gap: 1.5mm; margin-top: 1mm; }
+  .phase { flex: 1; background: #E8E8E8; border-radius: 2mm; padding: 1.5mm 2mm; text-align: center; }
+  .phase .name { font-size: 8.5pt; font-weight: 700; color: #006DAA; }
+  .phase .time { font-size: 7pt; color: #888; }
+  .phase .items { font-size: 6.5pt; color: #333; margin-top: 0.5mm; }
+  .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2mm; padding-top: 1.5mm; border-top: 1px solid #ccc; font-size: 6.5pt; color: #888; }
+  .footer a { color: #006DAA; text-decoration: none; }
+  .badge { display: inline-block; background: #1a1a2e; color: #fff; padding: 0.5mm 2mm; border-radius: 2mm; font-size: 6pt; font-weight: 600; }
+  @media print { body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>DIVE FRAMEWORK</h1>
+    <div class="subtitle">DIAGNOSE â†’ ITERATE â†’ VALIDATE â†’ EVOLVE</div>
+    <div class="tagline">AI Project Management for the Probabilistic Era â€¢ Vahid Hakami â€¢ v.1.0</div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT COLUMN -->
+    <div class="col">
+      <!-- 7 Principles -->
+      <div class="card" style="flex: 2;">
+        <h2>7 Core Principles</h2>
+        <div class="principle"><span class="num">1</span><span class="text"><b>Data First, Code Second</b> â€” Mandatory data feasibility gate before any model development</span></div>
+        <div class="principle"><span class="num">2</span><span class="text"><b>Parallel Exploration</b> â€” 3â€“5 tracks run simultaneously with fixed compute budgets</span></div>
+        <div class="principle"><span class="num">3</span><span class="text"><b>Metric Contracts</b> â€” Signed quantitative thresholds replace vague requirements</span></div>
+        <div class="principle"><span class="num">4</span><span class="text"><b>Fail Quantitatively</b> â€” Pre-defined kill criteria; a kill is a success</span></div>
+        <div class="principle"><span class="num">5</span><span class="text"><b>Continuous Governance</b> â€” Permanent drift monitoring + living Governance Card</span></div>
+        <div class="principle"><span class="num">6</span><span class="text"><b>Human-in-the-Loop</b> â€” Three escalation tiers designed before deployment</span></div>
+        <div class="principle"><span class="num">7</span><span class="text"><b>Compute as Resource</b> â€” GPU/API burn rate tracked alongside schedule &amp; budget</span></div>
+      </div>
+
+      <!-- What's Included -->
+      <div class="card" style="flex: 1;">
+        <h2>What DIVE Includes</h2>
+        <ul>
+          <li><b>14 Templates</b> (T1â€“T14): Project Charter, Data Audit, Metric Contract, Experiment Log, Dashboard, Kill Decision, Validation Report, Deployment Checklist, Drift Report, Lessons Learned, etc.</li>
+          <li><b>5 Governance Artifacts</b> (G1â€“G5): Governance Card, Ethics Screen, Risk Register, Drift Log, Review Report</li>
+          <li><b>White Paper</b> published on SSRN (ID: 6806018)</li>
+          <li><b>Implementation Guide</b> with interactive decision trees</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col">
+      <!-- Lifecycle -->
+      <div class="card" style="flex: 1.5;">
+        <h2>Lifecycle Overview</h2>
+        <div class="lifecycle">
+          <div class="phase">
+            <div class="name">Diagnose</div>
+            <div class="time">2â€“4 wks</div>
+            <div class="items">Validate problem<br>Data audit &amp; signal<br>Baseline metrics<br>Metric Contract<br>Ethics screen</div>
+          </div>
+          <div class="phase">
+            <div class="name">Iterate</div>
+            <div class="time">4â€“8 wks</div>
+            <div class="items">Parallel experiments<br>Compute budgets<br>Weekly dashboards<br>Track burn rate<br>Select winner</div>
+          </div>
+          <div class="phase">
+            <div class="name">Validate</div>
+            <div class="time">2â€“4 wks</div>
+            <div class="items">Hold-out eval<br>Bias &amp; fairness<br>Edge case tests<br>Stakeholder demo<br>Go/No-Go</div>
+          </div>
+          <div class="phase">
+            <div class="name">Evolve</div>
+            <div class="time">Ongoing</div>
+            <div class="items">Deploy + monitor<br>Drift tracking<br>Auto-alerting<br>Retrain cycles<br>Quarterly review</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why DIVE Wins -->
+      <div class="card" style="flex: 1;">
+        <h2>Why DIVE Wins</h2>
+        <ul>
+          <li><b>Novel mechanisms:</b> Parallel exploration tracks, quantitative kill criteria, compute as tracked resource dimension, Metric Contracts, drift protocol</li>
+          <li><b>vs. CPMAI (PMI):</b> Lighter process, fewer gates, modular templates vs. 76-page workbook</li>
+          <li><b>vs. TDSP (Microsoft):</b> Adds compute tracking, Metric Contracts, kill criteria</li>
+          <li><b>vs. MLOps:</b> Broadens to full project governance, not just deployment pipeline</li>
+          <li><b>vs. Agile/SAFe:</b> Designed for probabilistic AI, not deterministic software</li>
+        </ul>
+      </div>
+
+      <!-- Call to Action -->
+      <div class="card" style="flex: 0.8;">
+        <h2>Get Started</h2>
+        <ul>
+          <li>White Paper: <b>papers.ssrn.com</b> (Abstract ID: 6806018)</li>
+          <li>GitHub: <b>github.com/vdhakami/dive-framework</b></li>
+          <li>License: CC BY-ND 4.0 â€” Free to use and share</li>
+          <li>Contact: vd.hakami@gmail.com â€¢ linkedin.com/in/vahidhakami</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>DIVE Framework<sup>TM</sup> â€” Copyright Â© 2026 Vahid Hakami</span>
+    <span class="badge">SSRN: 6806018</span>
+    <span>Open source on GitHub</span>
+  </div>
+</div>
+</body>
+</html>
