@@ -1,0 +1,6 @@
+# Word documents — kept offline until copyright registration
+*.docx
+
+# Generated files
+*.pyc
+__pycache__/
