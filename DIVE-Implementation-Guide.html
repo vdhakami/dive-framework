@@ -73,7 +73,7 @@
   .checklist li.done::before { content: '\2713'; color: #4A9E6F; }
 
   /* SVG CONTAINER */
-  .svg-box { background: #F9F9F9; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 12px 0; text-align: center; }
+  .svg-box { background: #F9F9F9; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 12px 0; display: flex; flex-direction: column; align-items: center; }
   .svg-box svg { max-width: 100%; height: auto; }
 
   /* tags */
@@ -437,40 +437,40 @@
       <text x="310" y="25" text-anchor="middle" fill="#000" font-size="12" font-weight="600">Drift Detected</text>
 
       <line x1="310" y1="35" x2="310" y2="50" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
-      <line x1="90" y1="50" x2="530" y2="50" stroke="#888" stroke-width="1.5"/>
-      <line x1="90" y1="50" x2="90" y2="62" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
-      <line x1="240" y1="50" x2="240" y2="62" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
-      <line x1="380" y1="50" x2="380" y2="62" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
-      <line x1="530" y1="50" x2="530" y2="62" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
+      <line x1="85" y1="50" x2="535" y2="50" stroke="#888" stroke-width="1.5"/>
+      <line x1="85" y1="50" x2="85" y2="62" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
+      <line x1="235" y1="50" x2="235" y2="62" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
+      <line x1="385" y1="50" x2="385" y2="62" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
+      <line x1="535" y1="50" x2="535" y2="62" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
 
-      <rect x="30" y="62" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
-      <text x="90" y="84" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 1: Green</text>
-      <rect x="180" y="62" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
-      <text x="240" y="84" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 2: Yellow</text>
-      <rect x="320" y="62" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
-      <text x="380" y="84" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 3: Orange</text>
-      <rect x="470" y="62" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
-      <text x="530" y="84" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 4: Red</text>
+      <rect x="25" y="62" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="85" y="84" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 1: Green</text>
+      <rect x="175" y="62" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="235" y="84" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 2: Yellow</text>
+      <rect x="325" y="62" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="385" y="84" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 3: Orange</text>
+      <rect x="475" y="62" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="535" y="84" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 4: Red</text>
 
-      <line x1="90" y1="98" x2="90" y2="114" stroke="#ccc" stroke-width="1" marker-end="url(#arrEv)"/>
-      <line x1="240" y1="98" x2="240" y2="114" stroke="#ccc" stroke-width="1" marker-end="url(#arrEv)"/>
-      <line x1="380" y1="98" x2="380" y2="114" stroke="#ccc" stroke-width="1" marker-end="url(#arrEv)"/>
-      <line x1="530" y1="98" x2="530" y2="114" stroke="#ccc" stroke-width="1" marker-end="url(#arrEv)"/>
+      <line x1="85" y1="98" x2="85" y2="114" stroke="#ccc" stroke-width="1" marker-end="url(#arrEv)"/>
+      <line x1="235" y1="98" x2="235" y2="114" stroke="#ccc" stroke-width="1" marker-end="url(#arrEv)"/>
+      <line x1="385" y1="98" x2="385" y2="114" stroke="#ccc" stroke-width="1" marker-end="url(#arrEv)"/>
+      <line x1="535" y1="98" x2="535" y2="114" stroke="#ccc" stroke-width="1" marker-end="url(#arrEv)"/>
 
-      <rect x="30" y="114" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
-      <text x="90" y="133" text-anchor="middle" fill="#000" font-size="9" font-weight="600">No action needed</text>
-      <text x="90" y="145" text-anchor="middle" fill="#666" font-size="8">Continue monitoring</text>
-      <rect x="180" y="114" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
-      <text x="240" y="133" text-anchor="middle" fill="#000" font-size="9" font-weight="600">Investigate in 1 wk</text>
-      <text x="240" y="145" text-anchor="middle" fill="#666" font-size="8">Alert team, RCA</text>
-      <rect x="320" y="114" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
-      <text x="380" y="133" text-anchor="middle" fill="#000" font-size="9" font-weight="600">Prepare retraining</text>
-      <text x="380" y="145" text-anchor="middle" fill="#666" font-size="8">48hr deadline</text>
-      <rect x="470" y="114" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
-      <text x="530" y="133" text-anchor="middle" fill="#000" font-size="9" font-weight="600">HALT &amp; FALLBACK</text>
-      <text x="530" y="145" text-anchor="middle" fill="#666" font-size="8">Immediate incident</text>
+      <rect x="25" y="114" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="85" y="133" text-anchor="middle" fill="#000" font-size="9" font-weight="600">No action needed</text>
+      <text x="85" y="145" text-anchor="middle" fill="#666" font-size="8">Continue monitoring</text>
+      <rect x="175" y="114" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="235" y="133" text-anchor="middle" fill="#000" font-size="9" font-weight="600">Investigate in 1 wk</text>
+      <text x="235" y="145" text-anchor="middle" fill="#666" font-size="8">Alert team, RCA</text>
+      <rect x="325" y="114" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="385" y="133" text-anchor="middle" fill="#000" font-size="9" font-weight="600">Prepare retraining</text>
+      <text x="385" y="145" text-anchor="middle" fill="#666" font-size="8">48hr deadline</text>
+      <rect x="475" y="114" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="535" y="133" text-anchor="middle" fill="#000" font-size="9" font-weight="600">HALT &amp; FALLBACK</text>
+      <text x="535" y="145" text-anchor="middle" fill="#666" font-size="8">Immediate incident</text>
 
-      <line x1="90" y1="150" x2="530" y2="150" stroke="#888" stroke-width="1.5"/>
+      <line x1="85" y1="150" x2="535" y2="150" stroke="#888" stroke-width="1.5"/>
       <line x1="310" y1="150" x2="310" y2="165" stroke="#888" stroke-width="1.5" marker-end="url(#arrEv)"/>
 
       <rect x="210" y="165" width="200" height="30" rx="15" fill="#E0E0E0" stroke="#aaa"/>
