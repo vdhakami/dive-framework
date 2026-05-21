@@ -5,780 +5,606 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DIVE Framework — Implementation Guide</title>
 <style>
-  :root {
-    --primary: #1A3C6E; --primary-light: #2A5C9E; --primary-dark: #0F2440;
-    --accent: #4A9E6F; --accent-light: #6BC48A; --accent-dark: #3A7A55;
-    --bg: #F5F7FA; --card: #FFFFFF; --text: #1A1A2E; --text-light: #555;
-    --border: #E0E4E8; --shadow: 0 4px 20px rgba(0,0,0,0.08);
-    --radius: 12px;
-    --diagnose: #3B82F6; --iterate: #F59E0B; --validate: #10B981; --evolve: #EF4444;
-  }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg); color: var(--text); line-height: 1.7;
+    background: #F0F0F0; color: #000; line-height: 1.7;
   }
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-  /* HERO */
-  .hero {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-    color: #fff; padding: 60px 0 50px; text-align: center; position: relative; overflow: hidden;
+  /* HEADER */
+  .header {
+    background: #fff; border-bottom: 2px solid #ddd; padding: 30px 0 20px; text-align: center;
   }
-  .hero::after {
-    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-    background: radial-gradient(circle, rgba(74,158,111,0.08) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; position: relative; }
-  .hero .sub { font-size: 18px; opacity: .8; margin-top: 8px; position: relative; }
-  .hero .badge-row { display: flex; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; position: relative; }
+  .header h1 { font-size: 36px; font-weight: 800; letter-spacing: -1px; color: #000; }
+  .header .sub { font-size: 16px; color: #555; margin-top: 4px; }
 
-  /* TIMELINE */
-  .timeline { display: flex; justify-content: center; gap: 0; margin: 40px auto 30px; max-width: 900px; }
-  .tl-arrow {
-    flex: 1; text-align: center; padding: 16px 8px; border-radius: 8px;
-    position: relative; font-weight: 700; font-size: 14px; color: #fff;
-  }
-  .tl-arrow:not(:last-child)::after {
-    content: '>>'; position: absolute; right: -12px; top: 50%; transform: translateY(-50%);
-    font-size: 16px; color: rgba(255,255,255,0.5);
-  }
-  .tl-arrow .tl-label { font-size: 11px; opacity: .85; font-weight: 400; margin-top: 2px; }
-  .tl-diagnose { background: var(--diagnose); } .tl-iterate { background: var(--iterate); }
-  .tl-validate { background: var(--validate); } .tl-evolve { background: var(--evolve); }
+  /* TABS */
+  .tabs { display: flex; gap: 0; background: #E0E0E0; border-radius: 8px 8px 0 0; overflow: hidden; margin-top: 24px; }
+  .tab { flex: 1; padding: 12px 8px; text-align: center; font-weight: 700; font-size: 13px; cursor: pointer; border: none; background: transparent; color: #666; transition: all .15s; }
+  .tab:hover { background: rgba(0,0,0,0.05); }
+  .tab.active { background: #fff; color: #000; box-shadow: 0 -2px 0 #000; }
 
-  /* SECTION */
-  .section { margin: 32px 0; }
-  .section-title {
-    font-size: 26px; font-weight: 800; color: var(--primary);
-    padding-bottom: 8px; border-bottom: 3px solid var(--accent); margin-bottom: 24px;
-  }
-  .section-title .phase-badge {
-    display: inline-block; font-size: 13px; font-weight: 700; padding: 3px 12px;
-    border-radius: 20px; color: #fff; vertical-align: middle; margin-right: 10px;
-  }
+  .tab-content { display: none; background: #fff; padding: 24px; border-radius: 0 0 8px 8px; margin-bottom: 16px; }
+  .tab-content.active { display: block; }
 
-  /* STEPS */
-  .step-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 768px) { .step-grid { grid-template-columns: 1fr; } }
-  .step-card {
-    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 20px; border-left: 4px solid var(--border); position: relative;
+  /* ACCORDION */
+  .accordion { margin: 8px 0; }
+  .acc-header {
+    padding: 14px 18px; background: #F5F5F5; border: 1px solid #ddd; border-radius: 6px;
+    cursor: pointer; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between;
+    align-items: center; user-select: none; transition: background .15s;
   }
-  .step-card .step-num {
-    position: absolute; top: -10px; left: 16px; width: 28px; height: 28px;
-    border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700;
-  }
-  .step-card h4 { font-size: 15px; margin: 4px 0 8px; padding-top: 8px; }
-  .step-card p { font-size: 13.5px; color: var(--text-light); }
-  .step-card .time { font-size: 12px; color: var(--text-light); margin-top: 8px; font-weight: 600; }
-  .step-card .time span { color: var(--accent); }
+  .acc-header:hover { background: #EBEBEB; }
+  .acc-header .arrow { font-size: 12px; transition: transform .2s; }
+  .acc-header.open .arrow { transform: rotate(180deg); }
+  .acc-body { display: none; padding: 16px 18px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 6px 6px; margin-top: -1px; }
+  .acc-body.open { display: block; }
 
-  /* GATE BOX */
-  .gate-box {
-    background: #FFF8E1; border-left: 4px solid #F59E0B; border-radius: 8px;
-    padding: 16px 20px; margin: 20px 0;
-  }
-  .gate-box strong { color: #B45309; }
-  .gate-box ul { margin: 6px 0 0 16px; font-size: 14px; }
-  .gate-box ul li { margin-bottom: 4px; }
+  /* CARDS */
+  .card { background: #F9F9F9; border: 1px solid #ddd; border-radius: 8px; padding: 16px 18px; margin-bottom: 10px; }
+  .card h4 { font-size: 14px; margin-bottom: 4px; }
+  .card p { font-size: 13px; color: #333; }
+  .card .time { font-size: 12px; color: #666; margin-top: 6px; }
 
-  /* DIAGRAM BOX */
-  .diagram-box {
-    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 24px; margin: 20px 0; text-align: center;
-  }
-  .diagram-box svg { max-width: 100%; height: auto; }
+  /* GATE */
+  .gate { background: #F5F5F5; border: 2px dashed #999; padding: 14px 18px; margin: 16px 0; border-radius: 8px; }
+  .gate strong { font-size: 14px; }
+  .gate ul { margin: 6px 0 0 16px; font-size: 13px; }
+  .gate ul li { margin-bottom: 3px; }
+
+  /* TABLE */
+  .tbl { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  .tbl th { background: #E0E0E0; padding: 10px 12px; text-align: left; font-weight: 700; border: 1px solid #ccc; }
+  .tbl td { padding: 8px 12px; border: 1px solid #ddd; }
+  .tbl tr:nth-child(even) td { background: #F5F5F5; }
 
   /* CHECKLIST */
   .checklist { list-style: none; padding: 0; }
   .checklist li {
-    padding: 10px 16px 10px 40px; position: relative; border-bottom: 1px solid var(--border);
-    font-size: 14px; cursor: pointer; transition: background .15s;
+    padding: 8px 12px 8px 34px; position: relative; border-bottom: 1px solid #eee;
+    font-size: 13px; cursor: pointer; transition: background .15s; user-select: none;
   }
-  .checklist li:hover { background: #F8F9FB; }
+  .checklist li:hover { background: #F5F5F5; }
   .checklist li::before {
-    content: '\25A1'; position: absolute; left: 12px; top: 10px; font-size: 18px; color: var(--primary);
+    content: '\25A1'; position: absolute; left: 10px; top: 8px; font-size: 16px; color: #666;
   }
-  .checklist li.done { text-decoration: line-through; opacity: .6; }
-  .checklist li.done::before { content: '\2713'; color: var(--accent); }
+  .checklist li.done { text-decoration: line-through; color: #999; }
+  .checklist li.done::before { content: '\2713'; color: #4A9E6F; }
 
-  /* DECISION TREE */
-  .tree { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 20px 0; }
-  .tree-node {
-    padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #fff;
-    position: relative; min-width: 140px; text-align: center;
-  }
-  .tree-node.question { background: var(--primary); }
-  .tree-node.yes { background: var(--accent); }
-  .tree-node.no { background: #EF4444; }
-  .tree-node.warning { background: #F59E0B; }
-  .tree-branch {
-    display: flex; gap: 40px; justify-content: center; margin-top: 0; position: relative;
-  }
-  .tree-branch::before {
-    content: ''; position: absolute; top: 0; left: 50%;
-    width: 2px; height: 20px; background: var(--border); transform: translateX(-50%);
-  }
-  .tree-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .tree-col .label { font-size: 11px; color: var(--text-light); font-weight: 600; }
-  .tree-connector { height: 20px; width: 2px; background: var(--border); }
+  /* SVG CONTAINER */
+  .svg-box { background: #F9F9F9; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 12px 0; text-align: center; }
+  .svg-box svg { max-width: 100%; height: auto; }
 
-  /* TIER TABLE */
-  .tier-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
-  .tier-table th { padding: 12px 14px; text-align: left; color: #fff; font-weight: 600; }
-  .tier-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
-  .tier-table tr:nth-child(even) td { background: #F8F9FB; }
-  .tier-tier1 th { background: #10B981; } .tier-tier2 th { background: #F59E0B; }
-  .tier-tier3 th { background: #EF4444; } .tier-tier4 th { background: #7C3AED; }
+  /* tags */
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #E8E8E8; color: #000; margin: 2px; }
 
-  /* DRIFT TABLE */
-  .drift-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
-  .drift-table th { padding: 10px 14px; text-align: left; color: #fff; font-weight: 600; }
-  .drift-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
-  .drift-green th { background: #10B981; } .drift-yellow th { background: #F59E0B; }
-  .drift-orange th { background: #F97316; } .drift-red th { background: #EF4444; }
+  /* label */
+  .phase-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 4px; background: #E0E0E0; color: #000; margin-right: 6px; }
 
-  /* PROGRESS BAR */
-  .progress-bar { height: 24px; border-radius: 12px; overflow: hidden; display: flex; margin: 16px 0; }
-  .progress-bar .seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
-  .seg-diagnose { background: var(--diagnose); } .seg-iterate { background: var(--iterate); }
-  .seg-validate { background: var(--validate); } .seg-evolve { background: var(--evolve); }
-
-  /* BUTTONS */
-  .btn {
-    display: inline-block; padding: 10px 24px; border-radius: 8px; font-size: 14px;
-    font-weight: 700; text-decoration: none; cursor: pointer; border: none; transition: all .15s;
-  }
-  .btn-primary { background: var(--primary); color: #fff; }
-  .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); }
-
-  /* PRINT */
-  @media print {
-    .hero { padding: 30px 0; } .step-card { break-inside: avoid; }
-  }
+  @media (max-width: 768px) { .tabs { flex-wrap: wrap; } .tab { flex: 1 0 50%; } }
 </style>
 </head>
 <body>
 
-<!-- HERO -->
-<div class="hero">
+<div class="header">
   <div class="container">
-    <h1>DIVE Framework — Implementation Guide</h1>
-    <div class="sub">Diagnose &#8594; Iterate &#8594; Validate &#8594; Evolve</div>
-    <div class="badge-row">
-      <span style="background:#3B82F6;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600">Phase 1: Diagnose — 2-4 wks</span>
-      <span style="background:#F59E0B;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600">Phase 2: Iterate — 4-8 wks</span>
-      <span style="background:#10B981;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600">Phase 3: Validate — 2-4 wks</span>
-      <span style="background:#EF4444;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600">Phase 4: Evolve — Ongoing</span>
-    </div>
+    <h1>DIVE Framework</h1>
+    <div class="sub">Diagnose &#8594; Iterate &#8594; Validate &#8594; Evolve &nbsp;|&nbsp; Implementation Guide</div>
   </div>
 </div>
 
 <div class="container">
 
-<!-- IMPLEMENTATION OVERVIEW -->
-<div class="section">
-  <h2 class="section-title">Implementation Roadmap</h2>
-
-  <div class="timeline">
-    <div class="tl-arrow tl-diagnose">Diagnose<span class="tl-label">2-4 wks &bull; Feasibility</span></div>
-    <div class="tl-arrow tl-iterate">Iterate<span class="tl-label">4-8 wks &bull; Experiment</span></div>
-    <div class="tl-arrow tl-validate">Validate<span class="tl-label">2-4 wks &bull; Verify</span></div>
-    <div class="tl-arrow tl-evolve">Evolve<span class="tl-label">Ongoing &bull; Monitor</span></div>
-  </div>
-
-  <div class="progress-bar">
-    <div class="seg seg-diagnose" style="width:20%">20%</div>
-    <div class="seg seg-iterate" style="width:35%">35%</div>
-    <div class="seg seg-validate" style="width:20%">20%</div>
-    <div class="seg seg-evolve" style="width:25%">25%</div>
-  </div>
-
-  <p style="text-align:center;font-size:14px;color:var(--text-light);margin-top:8px;">Typical effort distribution across the 4 phases</p>
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" data-tab="overview">Overview</button>
+  <button class="tab" data-tab="diagnose">Diagnose</button>
+  <button class="tab" data-tab="iterate">Iterate</button>
+  <button class="tab" data-tab="validate">Validate</button>
+  <button class="tab" data-tab="evolve">Evolve</button>
+  <button class="tab" data-tab="checklist">Checklist</button>
 </div>
 
-<!-- PHASE 1: DIAGNOSE -->
-<div class="section">
-  <h2 class="section-title"><span class="phase-badge" style="background:var(--diagnose)">P1</span> Diagnose — Validate Feasibility</h2>
+<!-- TAB: OVERVIEW -->
+<div class="tab-content active" id="tab-overview">
+  <h2 style="font-size:20px;margin-bottom:12px;">Implementation Roadmap</h2>
 
-  <div class="diagram-box">
-    <svg viewBox="0 0 800 100" width="800" height="100">
-      <defs>
-        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#2563EB"/>
-        </linearGradient>
-      </defs>
-      <rect x="10" y="20" width="130" height="60" rx="8" fill="url(#g1)"/>
-      <text x="75" y="55" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">1. Problem</text>
-      <text x="75" y="70" text-anchor="middle" fill="#fff" font-size="11" opacity=".8">Framing</text>
+  <div class="svg-box">
+    <svg viewBox="0 0 720 70" width="720" height="70">
+      <rect x="10" y="12" width="160" height="46" rx="6" fill="#E0E0E0" stroke="#aaa" stroke-width="1"/>
+      <text x="90" y="36" text-anchor="middle" fill="#000" font-size="13" font-weight="700">Diagnose</text>
+      <text x="90" y="50" text-anchor="middle" fill="#555" font-size="10">2-4 weeks</text>
+      <text x="178" y="36" fill="#888" font-size="16" font-weight="700">&#8594;</text>
 
-      <line x1="140" y1="50" x2="175" y2="50" stroke="#93C5FD" stroke-width="2" marker-end="url(#arrow1)"/>
-      <defs><marker id="arrow1" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10" fill="#93C5FD"/></marker></defs>
+      <rect x="195" y="12" width="160" height="46" rx="6" fill="#E0E0E0" stroke="#aaa" stroke-width="1"/>
+      <text x="275" y="36" text-anchor="middle" fill="#000" font-size="13" font-weight="700">Iterate</text>
+      <text x="275" y="50" text-anchor="middle" fill="#555" font-size="10">4-8 weeks</text>
+      <text x="363" y="36" fill="#888" font-size="16" font-weight="700">&#8594;</text>
 
-      <rect x="180" y="20" width="130" height="60" rx="8" fill="url(#g1)"/>
-      <text x="245" y="50" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">2. Data Audit</text>
-      <text x="245" y="67" text-anchor="middle" fill="#fff" font-size="11" opacity=".8">Inventory + Quality</text>
+      <rect x="380" y="12" width="160" height="46" rx="6" fill="#E0E0E0" stroke="#aaa" stroke-width="1"/>
+      <text x="460" y="36" text-anchor="middle" fill="#000" font-size="13" font-weight="700">Validate</text>
+      <text x="460" y="50" text-anchor="middle" fill="#555" font-size="10">2-4 weeks</text>
+      <text x="548" y="36" fill="#888" font-size="16" font-weight="700">&#8594;</text>
 
-      <line x1="310" y1="50" x2="345" y2="50" stroke="#93C5FD" stroke-width="2"/>
-      <rect x="350" y="20" width="130" height="60" rx="8" fill="url(#g1)"/>
-      <text x="415" y="50" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">3. Baseline</text>
-      <text x="415" y="67" text-anchor="middle" fill="#fff" font-size="11" opacity=".8">Simple Model</text>
-
-      <line x1="480" y1="50" x2="515" y2="50" stroke="#93C5FD" stroke-width="2"/>
-      <rect x="520" y="20" width="130" height="60" rx="8" fill="url(#g1)"/>
-      <text x="585" y="50" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">4. Contract</text>
-      <text x="585" y="67" text-anchor="middle" fill="#fff" font-size="11" opacity=".8">Metric Contract</text>
-
-      <line x1="650" y1="50" x2="685" y2="50" stroke="#93C5FD" stroke-width="2"/>
-      <rect x="690" y="20" width="100" height="60" rx="8" fill="#F59E0B"/>
-      <text x="740" y="55" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">GATE</text>
-      <text x="740" y="70" text-anchor="middle" fill="#fff" font-size="10" opacity=".8">Go / No-Go</text>
+      <rect x="565" y="12" width="145" height="46" rx="6" fill="#D0D0D0" stroke="#aaa" stroke-width="1"/>
+      <text x="637" y="36" text-anchor="middle" fill="#000" font-size="13" font-weight="700">Evolve</text>
+      <text x="637" y="50" text-anchor="middle" fill="#555" font-size="10">Ongoing</text>
     </svg>
   </div>
 
-  <div class="step-grid">
-    <div class="step-card" style="border-color:var(--diagnose)">
-      <div class="step-num" style="background:var(--diagnose)">1</div>
-      <h4>Problem Framing Workshop</h4>
-      <p>Gather all stakeholders. Ask: <em>"If this AI works perfectly, what changes in the business?"</em> Write the answer as your North Star. Determine problem type (classification, generation, regression, etc.).</p>
-      <div class="time">&#9200; <span>2-3 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--diagnose)">
-      <div class="step-num" style="background:var(--diagnose)">2</div>
-      <h4>Data Landscape Audit</h4>
-      <p>List every data source. For each: type, volume, freshness, owner, access method. Score quality 1-5 on: completeness, consistency, accuracy, timeliness, relevance, accessibility.</p>
-      <div class="time">&#9200; <span>3-5 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--diagnose)">
-      <div class="step-num" style="background:var(--diagnose)">3</div>
-      <h4>Feasibility Baseline</h4>
-      <p>Train the simplest possible model (logistic regression, zero-shot LLM) on available data. If baseline &#8804; random heuristic, flag for redesign. Document baseline metrics.</p>
-      <div class="time">&#9200; <span>2-4 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--diagnose)">
-      <div class="step-num" style="background:var(--diagnose)">4</div>
-      <h4>Metric Contract Negotiation</h4>
-      <p>Define primary metrics (target + minimum), secondary metrics (warning thresholds), constraint gates (latency, cost, model size), test set spec, and fairness requirements. All parties sign.</p>
-      <div class="time">&#9200; <span>2-3 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--diagnose)">
-      <div class="step-num" style="background:var(--diagnose)">5</div>
-      <h4>Ethics Screening</h4>
-      <p>Run the 10-question AI Ethics Checklist. Classify project as Low / Medium / High risk. Document mitigations. High risk requires full board review before proceeding.</p>
-      <div class="time">&#9200; <span>1 day</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--diagnose)">
-      <div class="step-num" style="background:var(--diagnose)">6</div>
-      <h4>Risk Register + Build/Buy</h4>
-      <p>Create AI Risk Register (7 categories: data, model, operational, ethical, governance, drift, security). Assess build vs. buy. Document in Project Charter.</p>
-      <div class="time">&#9200; <span>1-2 days</span></div>
+  <div class="svg-box">
+    <p style="font-size:13px;font-weight:700;margin-bottom:8px;color:#000;">Effort Distribution</p>
+    <svg viewBox="0 0 600 30" width="600" height="30">
+      <rect x="0" y="0" width="120" height="28" rx="4" fill="#E0E0E0"/>
+      <text x="60" y="19" text-anchor="middle" fill="#000" font-size="11" font-weight="600">20% Diagnose</text>
+      <rect x="125" y="0" width="200" height="28" rx="4" fill="#D5D5D5"/>
+      <text x="225" y="19" text-anchor="middle" fill="#000" font-size="11" font-weight="600">35% Iterate</text>
+      <rect x="330" y="0" width="120" height="28" rx="4" fill="#E0E0E0"/>
+      <text x="390" y="19" text-anchor="middle" fill="#000" font-size="11" font-weight="600">20% Validate</text>
+      <rect x="455" y="0" width="145" height="28" rx="4" fill="#D0D0D0"/>
+      <text x="527" y="19" text-anchor="middle" fill="#000" font-size="11" font-weight="600">25% Evolve</text>
+    </svg>
+  </div>
+
+  <div class="accordion">
+    <div class="acc-header" onclick="toggleAcc(this)">&#128196; 7 Principles (click to expand) <span class="arrow">&#9660;</span></div>
+    <div class="acc-body">
+      <ol style="padding-left:18px;font-size:13px;">
+        <li><strong>Data First, Code Second</strong> &mdash; No code until data feasibility is proven</li>
+        <li><strong>Parallel Exploration</strong> &mdash; 3-5 tracks simultaneously, fixed compute budgets</li>
+        <li><strong>Metric Contracts</strong> &mdash; Signed measurable success criteria before start</li>
+        <li><strong>Fail Quantitatively</strong> &mdash; Pre-defined kill criteria, not subjective judgment</li>
+        <li><strong>Continuous Governance</strong> &mdash; Monitoring is a permanent phase, not a handoff</li>
+        <li><strong>Human-in-the-Loop</strong> &mdash; 3 escalation tiers designed pre-deployment</li>
+        <li><strong>Compute as Resource</strong> &mdash; GPU/API cost tracked like budget &amp; schedule</li>
+      </ol>
     </div>
   </div>
 
-  <!-- Decision Tree -->
-  <div class="gate-box">
-    <strong>&#128680; EXIT GATE: Feasibility Review</strong>
+  <div class="accordion">
+    <div class="acc-header" onclick="toggleAcc(this)">&#128200; Templates &amp; Governance <span class="arrow">&#9660;</span></div>
+    <div class="acc-body">
+      <p style="font-weight:700;margin-bottom:4px;font-size:13px;">14 Templates:</p>
+      <p style="font-size:12px;color:#333;">T1: Charter &bull; T2: Data Inventory &bull; T3: Metric Contract &bull; T4: Experiment Log &bull; T5: Dashboard &bull; T6: Evaluation Report &bull; T7: Risk Register &bull; T8: Governance Card &bull; T9: Ethics Screening &bull; T10: Deployment &bull; T11: Drift Log &bull; T12: Gate Review &bull; T13: Retrospective &bull; T14: Compute Tracker</p>
+      <p style="font-weight:700;margin:8px 0 4px;font-size:13px;">5 Governance Artifacts:</p>
+      <p style="font-size:12px;color:#333;">G1: Board Charter &bull; G2: Ethics Review Protocol &bull; G3: Drift Response &bull; G4: Audit Policy &bull; G5: Tier Matrix</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="acc-header" onclick="toggleAcc(this)">&#128204; Tier Classification <span class="arrow">&#9660;</span></div>
+    <div class="acc-body">
+      <table class="tbl">
+        <tr><th>Tier</th><th>Label</th><th>Governance Required</th></tr>
+        <tr><td><strong>T1</strong></td><td>Low</td><td>Charter + Risk Register + Governance Card</td></tr>
+        <tr><td><strong>T2</strong></td><td>Medium</td><td>All templates + Bi-weekly board review</td></tr>
+        <tr><td><strong>T3</strong></td><td>High</td><td>All templates + Ethics review + Full board sign-off</td></tr>
+        <tr><td><strong>T4</strong></td><td>Critical</td><td>Tier 3 + External audit + Regulatory notification</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: DIAGNOSE -->
+<div class="tab-content" id="tab-diagnose">
+  <h2 style="font-size:20px;margin-bottom:8px;">Phase 1: Diagnose</h2>
+  <p style="font-size:13px;color:#555;margin-bottom:16px;">Validate the problem is AI-suitable, data is available, and success is measurable. Fixed at 2-4 weeks.</p>
+
+  <div class="svg-box">
+    <svg viewBox="0 0 780 75" width="780" height="75">
+      <rect x="5" y="8" width="110" height="46" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="60" y="32" text-anchor="middle" fill="#000" font-size="11" font-weight="700">1. Problem</text>
+      <text x="60" y="46" text-anchor="middle" fill="#666" font-size="9">Framing</text>
+
+      <line x1="115" y1="31" x2="140" y2="31" stroke="#ccc" stroke-width="1.5"/>
+
+      <rect x="142" y="8" width="110" height="46" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="197" y="32" text-anchor="middle" fill="#000" font-size="11" font-weight="700">2. Data</text>
+      <text x="197" y="46" text-anchor="middle" fill="#666" font-size="9">Audit</text>
+
+      <line x1="252" y1="31" x2="277" y2="31" stroke="#ccc" stroke-width="1.5"/>
+
+      <rect x="279" y="8" width="110" height="46" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="334" y="32" text-anchor="middle" fill="#000" font-size="11" font-weight="700">3. Baseline</text>
+      <text x="334" y="46" text-anchor="middle" fill="#666" font-size="9">Simple Model</text>
+
+      <line x1="389" y1="31" x2="414" y2="31" stroke="#ccc" stroke-width="1.5"/>
+
+      <rect x="416" y="8" width="110" height="46" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="471" y="32" text-anchor="middle" fill="#000" font-size="11" font-weight="700">4. Contract</text>
+      <text x="471" y="46" text-anchor="middle" fill="#666" font-size="9">Metric Contract</text>
+
+      <line x1="526" y1="31" x2="551" y2="31" stroke="#ccc" stroke-width="1.5"/>
+
+      <rect x="553" y="8" width="110" height="46" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="608" y="32" text-anchor="middle" fill="#000" font-size="11" font-weight="700">5. Gate</text>
+      <text x="608" y="46" text-anchor="middle" fill="#666" font-size="9">Go/No-Go</text>
+    </svg>
+  </div>
+
+  <div class="card"><h4>&#9312; Problem Framing Workshop</h4><p>Gather stakeholders. Ask: <em>"If this AI works perfectly, what changes in the business?"</em> Define problem type (classification, generation, regression, etc.). Document North Star.</p><div class="time">&#9200; 2-3 days</div></div>
+  <div class="card"><h4>&#9313; Data Landscape Audit</h4><p>List every data source. For each: type, volume, freshness, owner, access method. Score quality 1-5 on 6 dimensions (completeness, consistency, accuracy, timeliness, relevance, accessibility).</p><div class="time">&#9200; 3-5 days</div></div>
+  <div class="card"><h4>&#9314; Feasibility Baseline</h4><p>Train simplest model on available data. If baseline &#8804; random heuristic, flag for redesign. Documents minimum performance floor.</p><div class="time">&#9200; 2-4 days</div></div>
+  <div class="card"><h4>&#9315; Metric Contract</h4><p>Define primary metrics (target + minimum), secondaries (warning thresholds), constraint gates (latency/cost/size), test set spec, fairness requirements. ALL parties sign.</p><div class="time">&#9200; 2-3 days</div></div>
+  <div class="card"><h4>&#9316; Ethics + Risk</h4><p>Complete Ethics Screening (10 questions). Classify Low/Medium/High. Create Risk Register (7 AI-specific categories). Assess build vs. buy.</p><div class="time">&#9200; 2-3 days</div></div>
+
+  <div class="gate">
+    <strong>&#9651; EXIT GATE: Feasibility Review</strong>
     <ul>
-      <li>Data exists, accessible, and signal > noise floor</li>
-      <li>Metric Contract signed by ALL stakeholders</li>
-      <li>Baseline model > random heuristic</li>
-      <li>Ethics screening passed (or mitigations documented)</li>
+      <li>&#10003; Data exists, accessible, signal > noise</li>
+      <li>&#10003; Metric Contract signed by ALL stakeholders</li>
+      <li>&#10003; Baseline model > random heuristic</li>
+      <li>&#10003; Ethics screening passed (mitigations documented)</li>
+      <li><strong>Decision:</strong> Go / Conditional / Redesign / Kill</li>
     </ul>
-    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-      <span style="background:#10B981;color:#fff;padding:4px 16px;border-radius:20px;font-weight:700;font-size:13px;">GO</span>
-      <span style="background:#F59E0B;color:#fff;padding:4px 16px;border-radius:20px;font-weight:700;font-size:13px;">CONDITIONAL</span>
-      <span style="background:#EF4444;color:#fff;padding:4px 16px;border-radius:20px;font-weight:700;font-size:13px;">KILL</span>
-    </div>
   </div>
 
-  <div class="diagram-box">
-    <p style="font-weight:700;color:var(--primary);margin-bottom:12px;">Go / No-Go Decision Tree</p>
+  <div class="svg-box">
+    <p style="font-size:13px;font-weight:700;margin-bottom:8px;">Go/No-Go Decision Tree</p>
+    <svg viewBox="0 0 400 170" width="400" height="170">
+      <rect x="100" y="5" width="200" height="30" rx="15" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="200" y="25" text-anchor="middle" fill="#000" font-size="11" font-weight="700">Data quality > 3.5?</text>
+
+      <line x1="200" y1="35" x2="200" y2="50" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="100" y1="50" x2="300" y2="50" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="100" y1="50" x2="100" y2="60" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="300" y1="50" x2="300" y2="60" stroke="#ccc" stroke-width="1.5"/>
+
+      <text x="85" y="62" fill="#000" font-size="10" font-weight="600">Yes</text>
+      <text x="310" y="62" fill="#000" font-size="10" font-weight="600">No</text>
+
+      <rect x="45" y="70" width="120" height="30" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="105" y="89" text-anchor="middle" fill="#000" font-size="10" font-weight="600">Proceed to Iterate</text>
+      <line x1="105" y1="100" x2="105" y2="115" stroke="#ccc" stroke="#ccc" stroke-width="1"/>
+
+      <rect x="235" y="70" width="120" height="30" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="295" y="89" text-anchor="middle" fill="#000" font-size="10" font-weight="600">Redesign or Kill</text>
+      <line x1="295" y1="100" x2="295" y2="115" stroke="#ccc" stroke-width="1"/>
+
+      <rect x="45" y="115" width="120" height="30" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="105" y="134" text-anchor="middle" fill="#000" font-size="10" font-weight="600">Also check baseline</text>
+
+      <rect x="235" y="115" width="120" height="30" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="295" y="134" text-anchor="middle" fill="#000" font-size="10" font-weight="600">Document decision</text>
+    </svg>
+  </div>
+
+  <div style="margin:8px 0;">
+    <span class="tag">T1: Project Charter</span>
+    <span class="tag">T2: Data Inventory</span>
+    <span class="tag">T3: Metric Contract</span>
+    <span class="tag">T7: Risk Register</span>
+    <span class="tag">T9: Ethics Screening</span>
+    <span class="tag">T12: Gate Review</span>
+  </div>
+</div>
+
+<!-- TAB: ITERATE -->
+<div class="tab-content" id="tab-iterate">
+  <h2 style="font-size:20px;margin-bottom:8px;">Phase 2: Iterate</h2>
+  <p style="font-size:13px;color:#555;margin-bottom:16px;">Explore multiple approaches in parallel. Fixed budget (time + compute). 4-8 weeks.</p>
+
+  <div class="svg-box">
+    <p style="font-size:13px;font-weight:700;margin-bottom:12px;">Parallel Track Architecture</p>
+    <svg viewBox="0 0 620 240" width="620" height="240">
+      <rect x="220" y="5" width="180" height="28" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="310" y="24" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Metric Contract + Budget</text>
+
+      <line x1="310" y1="33" x2="310" y2="48" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="80" y1="48" x2="540" y2="48" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="80" y1="48" x2="80" y2="60" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="235" y1="48" x2="235" y2="60" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="385" y1="48" x2="385" y2="60" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="540" y1="48" x2="540" y2="60" stroke="#ccc" stroke-width="1.5"/>
+
+      <rect x="20" y="60" width="120" height="44" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="80" y="81" text-anchor="middle" fill="#000" font-size="12" font-weight="700">Track A</text>
+      <text x="80" y="96" text-anchor="middle" fill="#555" font-size="10">Fine-tuned BERT</text>
+
+      <rect x="175" y="60" width="120" height="44" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="235" y="81" text-anchor="middle" fill="#000" font-size="12" font-weight="700">Track B</text>
+      <text x="235" y="96" text-anchor="middle" fill="#555" font-size="10">Few-shot GPT-4</text>
+
+      <rect x="330" y="60" width="120" height="44" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="390" y="81" text-anchor="middle" fill="#000" font-size="12" font-weight="700">Track C</text>
+      <text x="390" y="96" text-anchor="middle" fill="#555" font-size="10">XGBoost</text>
+
+      <rect x="485" y="60" width="120" height="44" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="545" y="81" text-anchor="middle" fill="#000" font-size="12" font-weight="700">Track D</text>
+      <text x="545" y="96" text-anchor="middle" fill="#555" font-size="10">Ensemble</text>
+
+      <text x="80" y="118" text-anchor="middle" fill="#666" font-size="9">$500 GPU</text>
+      <text x="235" y="118" text-anchor="middle" fill="#666" font-size="9">$800 API</text>
+      <text x="390" y="118" text-anchor="middle" fill="#666" font-size="9">$200 CPU</text>
+      <text x="545" y="118" text-anchor="middle" fill="#666" font-size="9">$600 Both</text>
+
+      <line x1="80" y1="124" x2="80" y2="145" stroke="#ccc" stroke-width="1"/>
+      <line x1="235" y1="124" x2="235" y2="145" stroke="#ccc" stroke-width="1"/>
+      <line x1="390" y1="124" x2="390" y2="145" stroke="#ccc" stroke-width="1"/>
+      <line x1="545" y1="124" x2="545" y2="145" stroke="#ccc" stroke-width="1"/>
+      <line x1="80" y1="145" x2="545" y2="145" stroke="#ccc" stroke-width="1"/>
+      <line x1="310" y1="145" x2="310" y2="165" stroke="#ccc" stroke-width="1.5"/>
+
+      <rect x="190" y="165" width="240" height="28" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="310" y="184" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Weekly All-Track Sync</text>
+
+      <line x1="310" y1="193" x2="310" y2="208" stroke="#ccc" stroke-width="1.5"/>
+      <rect x="245" y="208" width="130" height="28" rx="14" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="310" y="227" text-anchor="middle" fill="#000" font-size="11" font-weight="600">SELECT WINNER</text>
+    </svg>
+  </div>
+
+  <div class="card"><h4>&#9312; Design Experiment Plan</h4><p>Create 3-5 parallel tracks. Each track: different algorithm/prompt/data approach. Each gets fixed compute budget. Document in T4.</p><div class="time">&#9200; 1-2 days</div></div>
+  <div class="card"><h4>&#9313; Allocate Resources</h4><p>Assign team per track. Provision GPU/API budgets. Set up experiment tracking (MLflow, W&B, or spreadsheet).</p><div class="time">&#9200; 1 day</div></div>
+  <div class="card"><h4>&#9314; Execute Tracks (Parallel)</h4><p>Run all tracks simultaneously. Weekly all-track sync to compare results on T5 Dashboard. Track compute spend daily via T14.</p><div class="time">&#9200; 3-6 weeks</div></div>
+  <div class="card"><h4>&#9315; Mid-Phase Pivot</h4><p>Kill underperforming tracks. Reallocate remaining budget to promising ones. Add new tracks if justified.</p><div class="time">&#9200; Week 3-4</div></div>
+  <div class="card"><h4>&#9316; Select Candidate</h4><p>Compare final metrics vs. Metric Contract. Select top track(s). Criteria: meets thresholds, reproducible, documented, production-feasible.</p><div class="time">&#9200; 2-3 days</div></div>
+
+  <div class="gate">
+    <strong>&#9651; EXIT GATE: Candidate Selection</strong>
+    <ul>
+      <li>&#10003; At least one track meets ALL Metric Contract thresholds</li>
+      <li>&#10003; Top candidate reproducible + documented</li>
+      <li>&#10003; Compute budget variance &lt; 20%</li>
+      <li>&#10003; Risk register updated with model-specific risks</li>
+    </ul>
+  </div>
+
+  <div style="margin:8px 0;">
+    <span class="tag">T4: Experiment Log</span>
+    <span class="tag">T5: Track Dashboard</span>
+    <span class="tag">T14: Compute Tracker</span>
+  </div>
+</div>
+
+<!-- TAB: VALIDATE -->
+<div class="tab-content" id="tab-validate">
+  <h2 style="font-size:20px;margin-bottom:8px;">Phase 3: Validate</h2>
+  <p style="font-size:13px;color:#555;margin-bottom:16px;">Rigorously evaluate against production conditions. 2-4 weeks.</p>
+
+  <div class="svg-box">
+    <p style="font-size:13px;font-weight:700;margin-bottom:12px;">5 Validation Dimensions</p>
+    <svg viewBox="0 0 520 170" width="520" height="170">
+      <rect x="210" y="65" width="100" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="260" y="88" text-anchor="middle" fill="#000" font-size="13" font-weight="700">Model</text>
+
+      <line x1="230" y1="65" x2="150" y2="25" stroke="#aaa" stroke-width="1.5"/>
+      <line x1="290" y1="65" x2="370" y2="25" stroke="#aaa" stroke-width="1.5"/>
+      <line x1="310" y1="83" x2="430" y2="83" stroke="#aaa" stroke-width="1.5"/>
+      <line x1="290" y1="101" x2="370" y2="140" stroke="#aaa" stroke-width="1.5"/>
+      <line x1="230" y1="101" x2="150" y2="140" stroke="#aaa" stroke-width="1.5"/>
+
+      <rect x="45" y="10" width="180" height="30" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="135" y="30" text-anchor="middle" fill="#000" font-size="11" font-weight="600">1. Accuracy</text>
+
+      <rect x="295" y="10" width="180" height="30" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="385" y="30" text-anchor="middle" fill="#000" font-size="11" font-weight="600">2. Fairness</text>
+
+      <rect x="365" y="68" width="180" height="30" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="455" y="88" text-anchor="middle" fill="#000" font-size="11" font-weight="600">3. Robustness</text>
+
+      <rect x="295" y="125" width="180" height="30" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="385" y="145" text-anchor="middle" fill="#000" font-size="11" font-weight="600">4. Efficiency</text>
+
+      <rect x="45" y="125" width="180" height="30" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="135" y="145" text-anchor="middle" fill="#000" font-size="11" font-weight="600">5. Explainability</text>
+    </svg>
+  </div>
+
+  <div class="card"><h4>&#9312; Hold-Out Evaluation</h4><p>Evaluate on unseen test set. Report every Metric Contract metric. Compare achieved vs target vs minimum.</p><div class="time">&#9200; 2-3 days</div></div>
+  <div class="card"><h4>&#9313; Robustness Testing</h4><p>Test on missing data, out-of-distribution inputs, adversarial examples, edge cases. Document failure rates.</p><div class="time">&#9200; 2-3 days</div></div>
+  <div class="card"><h4>&#9314; Bias Audit</h4><p>Disparate impact analysis across protected attributes. Measure demographic parity, equal opportunity, equalized odds.</p><div class="time">&#9200; 1-2 days</div></div>
+  <div class="card"><h4>&#9315; Performance Benchmark</h4><p>Measure latency (p50/p95/p99), throughput, memory, size, cost per inference. Compare against constraint gates.</p><div class="time">&#9200; 1-2 days</div></div>
+  <div class="card"><h4>&#9316; Stakeholder Demo</h4><p>Present results. Show behavior on examples. Walk through edge cases. Obtain signed Validation Certificate.</p><div class="time">&#9200; 1 day</div></div>
+
+  <div class="gate">
+    <strong>&#9651; EXIT GATE: Validation Sign-Off</strong>
+    <ul>
+      <li>&#10003; ALL Metric Contract thresholds met in production-like environment</li>
+      <li>&#10003; Bias audit clean or mitigations accepted</li>
+      <li>&#10003; Edge case handling documented</li>
+      <li>&#10003; Stakeholder demo + signed certificate</li>
+    </ul>
+  </div>
+
+  <div style="margin:8px 0;">
+    <span class="tag">T6: Evaluation Report</span>
+    <span class="tag">T10: Deployment Manifest</span>
+  </div>
+</div>
+
+<!-- TAB: EVOLVE -->
+<div class="tab-content" id="tab-evolve">
+  <h2 style="font-size:20px;margin-bottom:8px;">Phase 4: Evolve</h2>
+  <p style="font-size:13px;color:#555;margin-bottom:16px;">Deploy, monitor, and continuously improve. Ongoing.</p>
+
+  <div class="svg-box">
+    <p style="font-size:13px;font-weight:700;margin-bottom:10px;">Drift Response Protocol</p>
     <svg viewBox="0 0 600 200" width="600" height="200">
-      <!-- Top question -->
-      <rect x="200" y="10" width="200" height="36" rx="18" fill="var(--primary)"/>
-      <text x="300" y="33" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Data quality score > 3.5?</text>
-      <!-- Branches -->
-      <line x1="300" y1="46" x2="300" y2="70" stroke="#ccc" stroke-width="2"/>
-      <line x1="150" y1="70" x2="450" y2="70" stroke="#ccc" stroke-width="2"/>
-      <line x1="150" y1="70" x2="150" y2="90" stroke="#ccc" stroke-width="2"/>
-      <line x1="450" y1="70" x2="450" y2="90" stroke="#ccc" stroke-width="2"/>
-      <!-- Yes path -->
-      <rect x="75" y="90" width="150" height="36" rx="18" fill="var(--accent)"/>
-      <text x="150" y="112" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">YES &#8594; Proceed to Iterate</text>
-      <text x="80" y="80" fill="var(--accent)" font-size="11" font-weight="700">Yes</text>
-      <!-- No path -->
-      <rect x="375" y="90" width="150" height="36" rx="18" fill="#EF4444"/>
-      <text x="450" y="112" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">NO &#8594; Redesign or Kill</text>
-      <text x="440" y="80" fill="#EF4444" font-size="11" font-weight="700">No</text>
-      <!-- Continue arrow -->
-      <line x1="225" y1="126" x2="300" y2="160" stroke="#ccc" stroke-width="2"/>
-      <line x1="300" y1="160" x2="300" y2="175" stroke="#ccc" stroke-width="2"/>
-      <rect x="200" y="175" width="200" height="20" rx="10" fill="#F59E0B"/>
-      <text x="300" y="189" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">Check baseline > random too</text>
+      <rect x="200" y="5" width="200" height="28" rx="14" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="300" y="24" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Drift Detected</text>
+
+      <line x1="300" y1="33" x2="300" y2="48" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="75" y1="48" x2="525" y2="48" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="75" y1="48" x2="75" y2="60" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="225" y1="48" x2="225" y2="60" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="375" y1="48" x2="375" y2="60" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="525" y1="48" x2="525" y2="60" stroke="#ccc" stroke-width="1.5"/>
+
+      <rect x="15" y="60" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="75" y="82" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 1: Green</text>
+
+      <rect x="165" y="60" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="225" y="82" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 2: Yellow</text>
+
+      <rect x="315" y="60" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="375" y="82" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 3: Orange</text>
+
+      <rect x="465" y="60" width="120" height="36" rx="6" fill="#E8E8E8" stroke="#aaa"/>
+      <text x="525" y="82" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Level 4: Red</text>
+
+      <line x1="75" y1="96" x2="75" y2="112" stroke="#ccc" stroke-width="1"/>
+      <line x1="225" y1="96" x2="225" y2="112" stroke="#ccc" stroke-width="1"/>
+      <line x1="375" y1="96" x2="375" y2="112" stroke="#ccc" stroke-width="1"/>
+      <line x1="525" y1="96" x2="525" y2="112" stroke="#ccc" stroke-width="1"/>
+
+      <rect x="15" y="112" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="75" y="131" text-anchor="middle" fill="#000" font-size="9" font-weight="600">No action needed</text>
+      <text x="75" y="143" text-anchor="middle" fill="#666" font-size="8">Continue monitoring</text>
+
+      <rect x="165" y="112" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="225" y="131" text-anchor="middle" fill="#000" font-size="9" font-weight="600">Investigate in 1 wk</text>
+      <text x="225" y="143" text-anchor="middle" fill="#666" font-size="8">Alert team, RCA</text>
+
+      <rect x="315" y="112" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="375" y="131" text-anchor="middle" fill="#000" font-size="9" font-weight="600">Prepare retraining</text>
+      <text x="375" y="143" text-anchor="middle" fill="#666" font-size="8">48hr deadline</text>
+
+      <rect x="465" y="112" width="120" height="36" rx="6" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="525" y="131" text-anchor="middle" fill="#000" font-size="9" font-weight="600">HALT & FALLBACK</text>
+      <text x="525" y="143" text-anchor="middle" fill="#666" font-size="8">Immediate incident</text>
+
+      <line x1="75" y1="148" x2="75" y2="162" stroke="#ccc" stroke-width="1"/>
+      <line x1="225" y1="148" x2="225" y2="162" stroke="#ccc" stroke-width="1"/>
+      <line x1="375" y1="148" x2="375" y2="162" stroke="#ccc" stroke-width="1"/>
+      <line x1="525" y1="148" x2="525" y2="162" stroke="#ccc" stroke-width="1"/>
+
+      <rect x="200" y="162" width="200" height="28" rx="14" fill="#E0E0E0" stroke="#aaa"/>
+      <text x="300" y="181" text-anchor="middle" fill="#000" font-size="11" font-weight="600">Update Governance Card</text>
     </svg>
   </div>
 
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;">
-    <span style="background:#DBEAFE;color:#1E40AF;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T1: Project Charter</span>
-    <span style="background:#DBEAFE;color:#1E40AF;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T2: Data Inventory</span>
-    <span style="background:#DBEAFE;color:#1E40AF;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T3: Metric Contract</span>
-    <span style="background:#DBEAFE;color:#1E40AF;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T7: Risk Register</span>
-    <span style="background:#DBEAFE;color:#1E40AF;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T9: Ethics Screening</span>
-    <span style="background:#DBEAFE;color:#1E40AF;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T12: Gate Review</span>
-  </div>
-</div>
+  <div class="card"><h4>&#9312; Production Deployment</h4><p>Execute per Deployment Manifest. Strategy: Blue/Green, Canary, Rolling. Configure autoscaling, timeout, retry, fallback. Document rollback.</p><div class="time">&#9200; 2-5 days</div></div>
+  <div class="card"><h4>&#9313; Monitoring Setup</h4><p>Configure data/concept/performance drift monitoring. Set Yellow/Orange/Red alert thresholds. Define escalation paths.</p><div class="time">&#9200; 1-2 days</div></div>
+  <div class="card"><h4>&#9314; Governance Card</h4><p>Create T8: model identity, intended use, baseline performance, fairness metrics, monitoring config, dependencies, audit trail.</p><div class="time">&#9200; 1 day</div></div>
+  <div class="card"><h4>&#9315; Ongoing Monitoring</h4><p>Monitor dashboards daily. Respond to alerts per Drift Protocol (above). Log incidents in T11.</p><div class="time">&#9200; Ongoing</div></div>
+  <div class="card"><h4>&#9316; Quarterly Review</h4><p>Every 3 months: full governance review. Update Governance Card. Decide: continue, retrain, replace, or decommission.</p><div class="time">&#9200; Quarterly</div></div>
 
-<!-- PHASE 2: ITERATE -->
-<div class="section">
-  <h2 class="section-title"><span class="phase-badge" style="background:var(--iterate)">P2</span> Iterate — Parallel Experimentation</h2>
-
-  <div class="diagram-box">
-    <p style="font-weight:700;color:var(--primary);margin-bottom:16px;">Parallel Track Architecture</p>
-    <svg viewBox="0 0 700 260" width="700" height="260">
-      <!-- Input arrow -->
-      <rect x="260" y="0" width="180" height="30" rx="6" fill="var(--primary)"/>
-      <text x="350" y="20" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">Metric Contract + Budget</text>
-      <line x1="350" y1="30" x2="350" y2="50" stroke="#ccc" stroke-width="2"/>
-      <line x1="100" y1="50" x2="600" y2="50" stroke="#ccc" stroke-width="2"/>
-      <line x1="100" y1="50" x2="100" y2="70" stroke="#ccc" stroke-width="2"/>
-      <line x1="250" y1="50" x2="250" y2="70" stroke="#ccc" stroke-width="2"/>
-      <line x1="400" y1="50" x2="400" y2="70" stroke="#ccc" stroke-width="2"/>
-      <line x1="550" y1="50" x2="550" y2="70" stroke="#ccc" stroke-width="2"/>
-
-      <!-- Tracks -->
-      <rect x="40" y="70" width="120" height="50" rx="6" fill="#8B5CF6"/>
-      <text x="100" y="93" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Track A</text>
-      <text x="100" y="108" text-anchor="middle" fill="#fff" font-size="10" opacity=".8">Fine-tuned BERT</text>
-
-      <rect x="190" y="70" width="120" height="50" rx="6" fill="#EC4899"/>
-      <text x="250" y="93" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Track B</text>
-      <text x="250" y="108" text-anchor="middle" fill="#fff" font-size="10" opacity=".8">Few-shot GPT-4</text>
-
-      <rect x="340" y="70" width="120" height="50" rx="6" fill="#F59E0B"/>
-      <text x="400" y="93" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Track C</text>
-      <text x="400" y="108" text-anchor="middle" fill="#fff" font-size="10" opacity=".8">XGBoost</text>
-
-      <rect x="490" y="70" width="120" height="50" rx="6" fill="#10B981"/>
-      <text x="550" y="93" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Track D</text>
-      <text x="550" y="108" text-anchor="middle" fill="#fff" font-size="10" opacity=".8">Ensemble</text>
-
-      <!-- Budget labels -->
-      <text x="100" y="135" text-anchor="middle" fill="#8B5CF6" font-size="10" font-weight="600">$500 GPU</text>
-      <text x="250" y="135" text-anchor="middle" fill="#EC4899" font-size="10" font-weight="600">$800 API</text>
-      <text x="400" y="135" text-anchor="middle" fill="#F59E0B" font-size="10" font-weight="600">$200 CPU</text>
-      <text x="550" y="135" text-anchor="middle" fill="#10B981" font-size="10" font-weight="600">$600 Both</text>
-
-      <!-- Merge arrow -->
-      <line x1="100" y1="140" x2="100" y2="170" stroke="#ccc" stroke-width="1"/>
-      <line x1="250" y1="140" x2="250" y2="170" stroke="#ccc" stroke-width="1"/>
-      <line x1="400" y1="140" x2="400" y2="170" stroke="#ccc" stroke-width="1"/>
-      <line x1="550" y1="140" x2="550" y2="170" stroke="#ccc" stroke-width="1"/>
-      <line x1="100" y1="170" x2="550" y2="170" stroke="#ccc" stroke-width="1"/>
-      <line x1="350" y1="170" x2="350" y2="195" stroke="#ccc" stroke-width="2"/>
-
-      <!-- Weekly comparison -->
-      <rect x="210" y="195" width="280" height="30" rx="6" fill="#1E3A5F"/>
-      <text x="350" y="214" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">Weekly Sync &bull; Compare Dashboards</text>
-
-      <!-- Output -->
-      <line x1="350" y1="225" x2="350" y2="240" stroke="#ccc" stroke-width="2"/>
-      <rect x="285" y="240" width="130" height="20" rx="10" fill="#F59E0B"/>
-      <text x="350" y="254" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">SELECT WINNER</text>
-    </svg>
-  </div>
-
-  <div class="step-grid">
-    <div class="step-card" style="border-color:var(--iterate)">
-      <div class="step-num" style="background:var(--iterate)">1</div>
-      <h4>Design Experiment Plan</h4>
-      <p>Create 3-5 parallel tracks. Each track explores a different approach (different algorithm, prompt strategy, or data representation). Each gets a fixed compute budget.</p>
-      <div class="time">&#9200; <span>1-2 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--iterate)">
-      <div class="step-num" style="background:var(--iterate)">2</div>
-      <h4>Allocate Resources</h4>
-      <p>Assign team members per track. Provision GPU/API budgets. Set up experiment tracking (MLflow, W&amp;B, or simple spreadsheet).</p>
-      <div class="time">&#9200; <span>1 day</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--iterate)">
-      <div class="step-num" style="background:var(--iterate)">3</div>
-      <h4>Execute + Track</h4>
-      <p>All tracks run simultaneously. Each logs to Experiment Log (T4). Weekly all-track sync meeting compares results on Comparison Dashboard (T5).</p>
-      <div class="time">&#9200; <span>3-6 weeks</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--iterate)">
-      <div class="step-num" style="background:var(--iterate)">4</div>
-      <h4>Mid-Phase Pivot</h4>
-      <p>At midpoint: kill clearly underperforming tracks. Reallocate budget to promising ones. Add new tracks if justified by interim findings.</p>
-      <div class="time">&#9200; <span>Week 3-4</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--iterate)">
-      <div class="step-num" style="background:var(--iterate)">5</div>
-      <h4>Select Candidate</h4>
-      <p>Compare final metrics vs. Metric Contract. Select top track(s). Criteria: meets thresholds, reproducible, documented, production-feasible.</p>
-      <div class="time">&#9200; <span>2-3 days</span></div>
-    </div>
-  </div>
-
-  <div class="gate-box">
-    <strong>&#128680; EXIT GATE: Candidate Selection</strong>
+  <div class="gate">
+    <strong>&#9651; EXIT GATE: Decommissioning</strong>
     <ul>
-      <li>At least one track meets ALL Metric Contract thresholds</li>
-      <li>Top candidate reproducible + documented</li>
-      <li>Compute budget variance &lt; 20%</li>
-      <li>Risk register updated with model-specific risks</li>
+      <li>&#10003; Model permanently retired</li>
+      <li>&#10003; Governance Card finalized and archived</li>
+      <li>&#10003; Downstream consumers notified</li>
+      <li>&#10003; Replacement model in production (if applicable)</li>
     </ul>
   </div>
 
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;">
-    <span style="background:#FEF3C7;color:#92400E;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T4: Experiment Log</span>
-    <span style="background:#FEF3C7;color:#92400E;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T5: Track Dashboard</span>
-    <span style="background:#FEF3C7;color:#92400E;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T14: Compute Tracker</span>
+  <div style="margin:8px 0;">
+    <span class="tag">T8: Governance Card</span>
+    <span class="tag">T11: Drift Alert Log</span>
   </div>
 </div>
 
-<!-- PHASE 3: VALIDATE -->
-<div class="section">
-  <h2 class="section-title"><span class="phase-badge" style="background:var(--validate)">P3</span> Validate — Prove It Works</h2>
+<!-- TAB: CHECKLIST -->
+<div class="tab-content" id="tab-checklist">
+  <h2 style="font-size:20px;margin-bottom:8px;">Master Checklist</h2>
+  <p style="font-size:13px;color:#555;margin-bottom:16px;">Click each item to mark complete. Progress is saved in your browser.</p>
 
-  <div class="diagram-box">
-    <p style="font-weight:700;color:var(--primary);margin-bottom:16px;">5 Validation Dimensions</p>
-    <svg viewBox="0 0 600 200" width="600" height="200">
-      <!-- Center -->
-      <rect x="250" y="80" width="100" height="40" rx="8" fill="var(--primary)"/>
-      <text x="300" y="105" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Model</text>
-      <!-- Arms -->
-      <line x1="270" y1="80" x2="170" y2="30" stroke="#10B981" stroke-width="2"/>
-      <line x1="330" y1="80" x2="430" y2="30" stroke="#3B82F6" stroke-width="2"/>
-      <line x1="350" y1="100" x2="500" y2="100" stroke="#F59E0B" stroke-width="2"/>
-      <line x1="330" y1="120" x2="430" y2="170" stroke="#EF4444" stroke-width="2"/>
-      <line x1="270" y1="120" x2="170" y2="170" stroke="#8B5CF6" stroke-width="2"/>
-      <!-- Labels -->
-      <rect x="80" y="14" width="160" height="28" rx="14" fill="#10B981"/>
-      <text x="160" y="33" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">1. Accuracy</text>
-      <rect x="360" y="14" width="160" height="28" rx="14" fill="#3B82F6"/>
-      <text x="440" y="33" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">2. Fairness</text>
-      <rect x="420" y="86" width="160" height="28" rx="14" fill="#F59E0B"/>
-      <text x="500" y="105" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">3. Robustness</text>
-      <rect x="360" y="158" width="160" height="28" rx="14" fill="#EF4444"/>
-      <text x="440" y="177" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">4. Efficiency</text>
-      <rect x="80" y="158" width="160" height="28" rx="14" fill="#8B5CF6"/>
-      <text x="160" y="177" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">5. Explainability</text>
-    </svg>
+  <div style="margin-bottom:16px;">
+    <div style="height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;">
+      <div id="progressBar" style="height:100%;width:0%;background:#4A9E6F;border-radius:4px;transition:width .3s;"></div>
+    </div>
+    <p style="font-size:12px;color:#666;margin-top:4px;" id="progressText">0 / 0 completed</p>
   </div>
 
-  <div class="step-grid">
-    <div class="step-card" style="border-color:var(--validate)">
-      <div class="step-num" style="background:var(--validate)">1</div>
-      <h4>Hold-Out Evaluation</h4>
-      <p>Evaluate on held-out test set (never seen during Iterate). Report every metric from the Metric Contract. Compare achieved vs. target vs. minimum.</p>
-      <div class="time">&#9200; <span>2-3 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--validate)">
-      <div class="step-num" style="background:var(--validate)">2</div>
-      <h4>Robustness Testing</h4>
-      <p>Test on: missing data, out-of-distribution inputs, adversarial examples, edge cases. Document failure modes and error rates.</p>
-      <div class="time">&#9200; <span>2-3 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--validate)">
-      <div class="step-num" style="background:var(--validate)">3</div>
-      <h4>Bias Audit</h4>
-      <p>Run disparate impact analysis across protected attributes (race, gender, age). Measure demographic parity, equal opportunity, equalized odds. Remediate if thresholds exceeded.</p>
-      <div class="time">&#9200; <span>1-2 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--validate)">
-      <div class="step-num" style="background:var(--validate)">4</div>
-      <h4>Performance Benchmark</h4>
-      <p>Measure latency (p50/p95/p99), throughput, memory, model size, cost per inference. Compare against constraint gates in Metric Contract.</p>
-      <div class="time">&#9200; <span>1-2 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--validate)">
-      <div class="step-num" style="background:var(--validate)">5</div>
-      <h4>Stakeholder Demo</h4>
-      <p>Present results. Show model behavior on representative examples. Walk through edge cases. Obtain signed Validation Certificate.</p>
-      <div class="time">&#9200; <span>1 day</span></div>
-    </div>
-  </div>
-
-  <div class="gate-box">
-    <strong>&#128680; EXIT GATE: Validation Sign-Off</strong>
-    <ul>
-      <li>ALL Metric Contract thresholds met in production-like environment</li>
-      <li>Bias audit clean or mitigations accepted</li>
-      <li>Edge case handling documented</li>
-      <li>Stakeholder demo completed with signed certificate</li>
-    </ul>
-  </div>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;">
-    <span style="background:#D1FAE5;color:#065F46;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T6: Evaluation Report</span>
-    <span style="background:#D1FAE5;color:#065F46;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T10: Deployment Manifest</span>
-  </div>
-</div>
-
-<!-- PHASE 4: EVOLVE -->
-<div class="section">
-  <h2 class="section-title"><span class="phase-badge" style="background:var(--evolve)">P4</span> Evolve — Continuous Governance</h2>
-
-  <div class="diagram-box">
-    <p style="font-weight:700;color:var(--primary);margin-bottom:12px;">Drift Response Decision Tree</p>
-    <svg viewBox="0 0 650 280" width="650" height="280">
-      <!-- Top -->
-      <rect x="225" y="5" width="200" height="32" rx="16" fill="var(--primary)"/>
-      <text x="325" y="26" text-anchor="middle" fill="#fff" font-size="12" font-weight="600">Drift Detected</text>
-      <line x1="325" y1="37" x2="325" y2="55" stroke="#ccc" stroke-width="2"/>
-      <!-- 4 levels -->
-      <rect x="35" y="55" width="120" height="36" rx="8" fill="#10B981"/>
-      <text x="95" y="77" text-anchor="middle" fill="#fff" font-size="12" font-weight="600">Level 1: Green</text>
-      <rect x="180" y="55" width="120" height="36" rx="8" fill="#F59E0B"/>
-      <text x="240" y="77" text-anchor="middle" fill="#fff" font-size="12" font-weight="600">Level 2: Yellow</text>
-      <rect x="325" y="55" width="120" height="36" rx="8" fill="#F97316"/>
-      <text x="385" y="77" text-anchor="middle" fill="#fff" font-size="12" font-weight="600">Level 3: Orange</text>
-      <rect x="470" y="55" width="140" height="36" rx="8" fill="#EF4444"/>
-      <text x="540" y="77" text-anchor="middle" fill="#fff" font-size="12" font-weight="600">Level 4: Red</text>
-
-      <line x1="95" y1="91" x2="95" y2="115" stroke="#ccc" stroke-width="1.5"/>
-      <line x1="240" y1="91" x2="240" y2="115" stroke="#ccc" stroke-width="1.5"/>
-      <line x1="385" y1="91" x2="385" y2="115" stroke="#ccc" stroke-width="1.5"/>
-      <line x1="540" y1="91" x2="540" y2="115" stroke="#ccc" stroke-width="1.5"/>
-
-      <!-- Actions -->
-      <rect x="25" y="115" width="140" height="40" rx="6" fill="#A7F3D0"/>
-      <text x="95" y="132" text-anchor="middle" fill="#065F46" font-size="10" font-weight="600">No action needed</text>
-      <text x="95" y="146" text-anchor="middle" fill="#065F46" font-size="9">Continue monitoring</text>
-
-      <rect x="170" y="115" width="140" height="40" rx="6" fill="#FDE68A"/>
-      <text x="240" y="132" text-anchor="middle" fill="#92400E" font-size="10" font-weight="600">Investigate in 1 week</text>
-      <text x="240" y="146" text-anchor="middle" fill="#92400E" font-size="9">Alert team, RCA</text>
-
-      <rect x="310" y="115" width="150" height="40" rx="6" fill="#FED7AA"/>
-      <text x="385" y="132" text-anchor="middle" fill="#9A3412" font-size="10" font-weight="600">Prepare retraining</text>
-      <text x="385" y="146" text-anchor="middle" fill="#9A3412" font-size="9">48hr deadline</text>
-
-      <rect x="465" y="115" width="150" height="40" rx="6" fill="#FECACA"/>
-      <text x="540" y="132" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">HALT & FALLBACK</text>
-      <text x="540" y="146" text-anchor="middle" fill="#991B1B" font-size="9">Immediate incident</text>
-
-      <!-- Bottom decisions -->
-      <line x1="95" y1="155" x2="95" y2="175" stroke="#ccc" stroke-width="1"/>
-      <line x1="240" y1="155" x2="240" y2="175" stroke="#ccc" stroke-width="1"/>
-      <line x1="385" y1="155" x2="385" y2="175" stroke="#ccc" stroke-width="1"/>
-      <line x1="540" y1="155" x2="540" y2="175" stroke="#ccc" stroke-width="1"/>
-
-      <rect x="25" y="175" width="140" height="36" rx="8" fill="#E8F5E9" stroke="#10B981" stroke-width="1"/>
-      <text x="95" y="197" text-anchor="middle" fill="#065F46" font-size="10" font-weight="600">&#8599; Continue monitor</text>
-
-      <rect x="170" y="175" width="140" height="36" rx="8" fill="#FFF8E1" stroke="#F59E0B" stroke-width="1"/>
-      <text x="240" y="197" text-anchor="middle" fill="#92400E" font-size="10" font-weight="600">&#8599; RCA + Decision</text>
-
-      <rect x="310" y="175" width="150" height="36" rx="8" fill="#FFF3E0" stroke="#F97316" stroke-width="1"/>
-      <text x="385" y="197" text-anchor="middle" fill="#9A3412" font-size="10" font-weight="600">&#8599; Retrain or Rollback</text>
-
-      <rect x="465" y="175" width="150" height="36" rx="8" fill="#FFEBEE" stroke="#EF4444" stroke-width="1"/>
-      <text x="540" y="197" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">&#8599; Incident report</text>
-
-      <!-- Bottom connectors -->
-      <line x1="95" y1="211" x2="95" y2="240" stroke="#ccc" stroke-width="1"/>
-      <line x1="240" y1="211" x2="240" y2="240" stroke="#ccc" stroke-width="1"/>
-      <line x1="385" y1="211" x2="385" y2="240" stroke="#ccc" stroke-width="1"/>
-      <line x1="540" y1="211" x2="540" y2="240" stroke="#ccc" stroke-width="1"/>
-
-      <!-- Final -->
-      <rect x="220" y="240" width="210" height="28" rx="14" fill="var(--accent)"/>
-      <text x="325" y="259" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">Update Governance Card</text>
-    </svg>
-  </div>
-
-  <div class="step-grid">
-    <div class="step-card" style="border-color:var(--evolve)">
-      <div class="step-num" style="background:var(--evolve)">1</div>
-      <h4>Production Deployment</h4>
-      <p>Execute per Deployment Manifest. Strategy: Blue/Green, Canary, or Rolling. Configure autoscaling, timeout, retry, fallback. Document rollback.</p>
-      <div class="time">&#9200; <span>2-5 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--evolve)">
-      <div class="step-num" style="background:var(--evolve)">2</div>
-      <h4>Monitoring Setup</h4>
-      <p>Configure automated monitoring for data drift, concept drift, performance drift. Set alert thresholds (Yellow/Orange/Red). Define escalation paths.</p>
-      <div class="time">&#9200; <span>1-2 days</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--evolve)">
-      <div class="step-num" style="background:var(--evolve)">3</div>
-      <h4>Governance Card</h4>
-      <p>Create the Model Governance Card (T8). Document: identity, intended use, performance baseline, fairness metrics, monitoring config, dependencies.</p>
-      <div class="time">&#9200; <span>1 day</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--evolve)">
-      <div class="step-num" style="background:var(--evolve)">4</div>
-      <h4>Continuous Monitoring</h4>
-      <p>Monitor dashboards daily. Respond to alerts per Drift Response Protocol. Log all incidents in Drift Alert Log (T11).</p>
-      <div class="time">&#9200; <span>Ongoing</span></div>
-    </div>
-    <div class="step-card" style="border-color:var(--evolve)">
-      <div class="step-num" style="background:var(--evolve)">5</div>
-      <h4>Quarterly Review</h4>
-      <p>Every 3 months: full governance review. Update Governance Card. Assess if model still meets business needs. Decision: continue, retrain, replace, or decommission.</p>
-      <div class="time">&#9200; <span>Quarterly</span></div>
-    </div>
-  </div>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;">
-    <span style="background:#FEE2E2;color:#991B1B;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T8: Governance Card</span>
-    <span style="background:#FEE2E2;color:#991B1B;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;">T11: Drift Alert Log</span>
-  </div>
-</div>
-
-<!-- GOVERNANCE OVERVIEW -->
-<div class="section">
-  <h2 class="section-title">Governance Implementation</h2>
-
-  <div class="diagram-box">
-    <p style="font-weight:700;color:var(--primary);margin-bottom:16px;">AI Governance Board Structure</p>
-    <svg viewBox="0 0 700 200" width="700" height="200">
-      <rect x="250" y="10" width="200" height="40" rx="8" fill="var(--primary)"/>
-      <text x="350" y="35" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">AI Governance Board</text>
-
-      <line x1="350" y1="50" x2="350" y2="70" stroke="#ccc" stroke-width="2"/>
-      <line x1="100" y1="70" x2="600" y2="70" stroke="#ccc" stroke-width="2"/>
-
-      <line x1="100" y1="70" x2="100" y2="85" stroke="#ccc" stroke-width="1.5"/>
-      <line x1="250" y1="70" x2="250" y2="85" stroke="#ccc" stroke-width="1.5"/>
-      <line x1="350" y1="70" x2="350" y2="85" stroke="#ccc" stroke-width="1.5"/>
-      <line x1="450" y1="70" x2="450" y2="85" stroke="#ccc" stroke-width="1.5"/>
-      <line x1="600" y1="70" x2="600" y2="85" stroke="#ccc" stroke-width="1.5"/>
-
-      <rect x="30" y="85" width="145" height="45" rx="6" fill="#3B82F6"/>
-      <text x="102" y="105" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">Chair (Exec)</text>
-      <text x="102" y="120" text-anchor="middle" fill="#fff" font-size="9" opacity=".8">Appoints members</text>
-
-      <rect x="180" y="85" width="140" height="45" rx="6" fill="#10B981"/>
-      <text x="250" y="105" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">Ethics Officer</text>
-      <text x="250" y="120" text-anchor="middle" fill="#fff" font-size="9" opacity=".8">Reviews compliance</text>
-
-      <rect x="330" y="85" width="140" height="45" rx="6" fill="#F59E0B"/>
-      <text x="400" y="105" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">Tech Lead</text>
-      <text x="400" y="120" text-anchor="middle" fill="#fff" font-size="9" opacity=".8">Model evaluation</text>
-
-      <rect x="470" y="85" width="140" height="45" rx="6" fill="#8B5CF6"/>
-      <text x="540" y="105" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">Legal/Compliance</text>
-      <text x="540" y="120" text-anchor="middle" fill="#fff" font-size="9" opacity=".8">Regulatory</text>
-
-      <line x1="102" y1="130" x2="102" y2="150" stroke="#ccc" stroke-width="1"/>
-      <line x1="250" y1="130" x2="250" y2="150" stroke="#ccc" stroke-width="1"/>
-      <line x1="400" y1="130" x2="400" y2="150" stroke="#ccc" stroke-width="1"/>
-      <line x1="540" y1="130" x2="540" y2="150" stroke="#ccc" stroke-width="1"/>
-
-      <rect x="30" y="150" width="145" height="35" rx="6" fill="#E0E7FF" stroke="#6366F1" stroke-width="1"/>
-      <text x="102" y="172" text-anchor="middle" fill="#3730A3" font-size="10" font-weight="600">Bi-weekly reviews</text>
-      <rect x="180" y="150" width="140" height="35" rx="6" fill="#E0E7FF" stroke="#6366F1" stroke-width="1"/>
-      <text x="250" y="172" text-anchor="middle" fill="#3730A3" font-size="10" font-weight="600">Monthly board</text>
-      <rect x="330" y="150" width="140" height="35" rx="6" fill="#E0E7FF" stroke="#6366F1" stroke-width="1"/>
-      <text x="400" y="172" text-anchor="middle" fill="#3730A3" font-size="10" font-weight="600">Quarterly audit</text>
-      <rect x="470" y="150" width="140" height="35" rx="6" fill="#E0E7FF" stroke="#6366F1" stroke-width="1"/>
-      <text x="540" y="172" text-anchor="middle" fill="#3730A3" font-size="10" font-weight="600">Annual review</text>
-    </svg>
-  </div>
-</div>
-
-<!-- TIER ASSESSMENT -->
-<div class="section">
-  <h2 class="section-title">Tier Assessment — How Deep Does Your Governance Need To Be?</h2>
-
-  <table class="tier-table">
-    <thead><tr class="tier-tier1"><th>Tier</th><th>Label</th><th>Example Projects</th><th>Governance Required</th></tr></thead>
-    <tbody>
-      <tr><td><span style="background:#10B981;color:#fff;padding:2px 10px;border-radius:12px;font-weight:700;font-size:12px;">T1</span></td><td><strong>Low</strong></td><td>Internal dashboard, recommendation engine</td><td>Charter + Risk Register + Governance Card</td></tr>
-      <tr style="background:#F8F9FB;"><td><span style="background:#F59E0B;color:#fff;padding:2px 10px;border-radius:12px;font-weight:700;font-size:12px;">T2</span></td><td><strong>Medium</strong></td><td>Customer support triage, fraud scoring</td><td>All templates + Bi-weekly board review</td></tr>
-      <tr><td><span style="background:#EF4444;color:#fff;padding:2px 10px;border-radius:12px;font-weight:700;font-size:12px;">T3</span></td><td><strong>High</strong></td><td>Loan approval, hiring screening</td><td>All templates + Ethics review + Full board sign-off</td></tr>
-      <tr style="background:#F8F9FB;"><td><span style="background:#7C3AED;color:#fff;padding:2px 10px;border-radius:12px;font-weight:700;font-size:12px;">T4</span></td><td><strong>Critical</strong></td><td>Medical diagnosis, self-driving, criminal justice</td><td>Tier 3 + External audit + Regulatory notification</td></tr>
-    </tbody>
-  </table>
-
-  <div class="gate-box">
-    <strong>&#128221; How to classify your project:</strong>
-    <p style="margin-top:6px;font-size:14px;">Score yourself 1-4 on each factor, average the score, round to nearest integer:</p>
-    <ul>
-      <li><strong>Autonomy:</strong> 1=Advisory, 2=Assisted, 3=Automated, 4=Full autonomy</li>
-      <li><strong>Impact:</strong> 1=Inconvenience, 2=Financial loss, 3=Health/safety, 4=Life-threatening</li>
-      <li><strong>Regulation:</strong> 1=None, 2=Some, 3=Heavily regulated, 4=Multiple jurisdictions</li>
-      <li><strong>Scales:</strong> 1=&lt;100 users, 2=100-10K, 3=10K-1M, 4=&gt;1M</li>
-    </ul>
-  </div>
-</div>
-
-<!-- MASTER CHECKLIST -->
-<div class="section">
-  <h2 class="section-title">Quick-Start Master Checklist</h2>
-  <p style="margin-bottom:12px;font-size:14px;">Check off each item as you complete it. Click the checkbox to mark done.</p>
-
-  <h3 style="color:var(--diagnose);margin:12px 0 8px;">&#9632; Diagnose</h3>
-  <ul class="checklist">
-    <li onclick="this.classList.toggle('done')">Complete Problem Framing Workshop with all stakeholders</li>
-    <li onclick="this.classList.toggle('done')">Audit all data sources (quality scores > 3.5 on 6 dimensions)</li>
-    <li onclick="this.classList.toggle('done')">Train feasibility baseline model (must beat random heuristic)</li>
-    <li onclick="this.classList.toggle('done')">Negotiate and sign Metric Contract with ALL stakeholders</li>
-    <li onclick="this.classList.toggle('done')">Complete AI Ethics Screening Checklist</li>
-    <li onclick="this.classList.toggle('done')">Create initial AI Risk Register</li>
-    <li onclick="this.classList.toggle('done')">Complete Build vs. Buy Assessment</li>
-    <li onclick="this.classList.toggle('done')">Pass Feasibility Gate (Go/No-Go decision)</li>
+  <h3 style="font-size:15px;margin:12px 0 6px;">Diagnose</h3>
+  <ul class="checklist" data-phase="diagnose">
+    <li>Complete Problem Framing Workshop with stakeholders</li>
+    <li>Audit all data sources (quality scores > 3.5)</li>
+    <li>Train feasibility baseline model (beat random heuristic)</li>
+    <li>Negotiate and sign Metric Contract</li>
+    <li>Complete Ethics Screening Checklist</li>
+    <li>Create initial AI Risk Register</li>
+    <li>Complete Build vs. Buy Assessment</li>
+    <li>Pass Feasibility Gate (Go/No-Go decision)</li>
   </ul>
 
-  <h3 style="color:var(--iterate);margin:12px 0 8px;">&#9632; Iterate</h3>
-  <ul class="checklist">
-    <li onclick="this.classList.toggle('done')">Design 3-5 parallel experiment tracks</li>
-    <li onclick="this.classList.toggle('done')">Allocate compute budget per track (Track in T14)</li>
-    <li onclick="this.classList.toggle('done')">Set up experiment tracking tool (MLflow / W&B / spreadsheet)</li>
-    <li onclick="this.classList.toggle('done')">Execute all tracks simultaneously</li>
-    <li onclick="this.classList.toggle('done')">Weekly all-track sync meetings (use T5 dashboard)</li>
-    <li onclick="this.classList.toggle('done')">Mid-phase pivot: kill underperformers, reallocate budget</li>
-    <li onclick="this.classList.toggle('done')">Select top candidate (meets Metric Contract thresholds)</li>
-    <li onclick="this.classList.toggle('done')">Pass Candidate Selection Gate</li>
+  <h3 style="font-size:15px;margin:12px 0 6px;">Iterate</h3>
+  <ul class="checklist" data-phase="iterate">
+    <li>Design 3-5 parallel experiment tracks</li>
+    <li>Allocate compute budget per track (T14)</li>
+    <li>Set up experiment tracking (MLflow / W&B / spreadsheet)</li>
+    <li>Execute all tracks simultaneously</li>
+    <li>Weekly all-track sync meetings (T5 dashboard)</li>
+    <li>Mid-phase pivot: kill underperformers, reallocate budget</li>
+    <li>Select top candidate (meets Metric Contract thresholds)</li>
+    <li>Pass Candidate Selection Gate</li>
   </ul>
 
-  <h3 style="color:var(--validate);margin:12px 0 8px;">&#9632; Validate</h3>
-  <ul class="checklist">
-    <li onclick="this.classList.toggle('done')">Run hold-out evaluation on unseen test set</li>
-    <li onclick="this.classList.toggle('done')">Complete robustness and edge case testing</li>
-    <li onclick="this.classList.toggle('done')">Run bias audit (disparate impact analysis)</li>
-    <li onclick="this.classList.toggle('done')">Complete performance benchmark (latency, throughput, cost)</li>
-    <li onclick="this.classList.toggle('done')">Present stakeholder demo and obtain signed Validation Certificate</li>
-    <li onclick="this.classList.toggle('done')">Pass Validation Sign-Off Gate</li>
+  <h3 style="font-size:15px;margin:12px 0 6px;">Validate</h3>
+  <ul class="checklist" data-phase="validate">
+    <li>Run hold-out evaluation on unseen test set</li>
+    <li>Complete robustness and edge case testing</li>
+    <li>Run bias audit (disparate impact analysis)</li>
+    <li>Complete performance benchmark (latency, throughput, cost)</li>
+    <li>Stakeholder demo + signed Validation Certificate</li>
+    <li>Pass Validation Sign-Off Gate</li>
   </ul>
 
-  <h3 style="color:var(--evolve);margin:12px 0 8px;">&#9632; Evolve</h3>
-  <ul class="checklist">
-    <li onclick="this.classList.toggle('done')">Deploy to production (with rollback plan)</li>
-    <li onclick="this.classList.toggle('done')">Configure monitoring dashboard (data/concept/performance drift)</li>
-    <li onclick="this.classList.toggle('done')">Create Model Governance Card (T8)</li>
-    <li onclick="this.classList.toggle('done')">Establish drift baselines (record initial distributions)</li>
-    <li onclick="this.classList.toggle('done')">Set up feedback pipeline for production data</li>
-    <li onclick="this.classList.toggle('done')">Schedule quarterly governance reviews</li>
+  <h3 style="font-size:15px;margin:12px 0 6px;">Evolve</h3>
+  <ul class="checklist" data-phase="evolve">
+    <li>Deploy to production (with rollback plan)</li>
+    <li>Configure monitoring dashboard (drift detection)</li>
+    <li>Create Model Governance Card (T8)</li>
+    <li>Establish drift baselines</li>
+    <li>Set up feedback pipeline</li>
+    <li>Schedule quarterly governance reviews</li>
   </ul>
-</div>
-
-<!-- FOOTER -->
-<div style="text-align:center;padding:40px 0 24px;border-top:1px solid var(--border);margin-top:40px;">
-  <p style="color:var(--text-light);font-size:13px;"><strong>DIVE Framework</strong> &mdash; Implementation Guide v1.0</p>
-  <p style="color:var(--text-light);font-size:12px;">SSRN Abstract ID: 6806018 &bull; github.com/vdhakami/dive-framework</p>
-  <p style="color:var(--text-light);font-size:12px;">Copyright &copy; 2026 Vahid Hakami</p>
 </div>
 
 </div><!-- /container -->
 
+<div style="text-align:center;padding:24px 16px;font-size:12px;color:#888;border-top:1px solid #ddd;margin-top:24px;">
+  DIVE Framework &mdash; Implementation Guide &mdash; SSRN: 6806018 &mdash; github.com/vdhakami/dive-framework
+</div>
+
 <script>
-// Save checklist state in localStorage
-document.querySelectorAll('.checklist li').forEach(item => {
-  const key = 'dive-checklist-' + item.textContent.trim().substring(0, 40);
-  if (localStorage.getItem(key) === 'done') item.classList.add('done');
-  item.addEventListener('click', function() {
-    const k = 'dive-checklist-' + this.textContent.trim().substring(0, 40);
-    if (this.classList.contains('done')) localStorage.setItem(k, 'done');
-    else localStorage.removeItem(k);
+// ── TAB SWITCHING ──
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+    updateProgress();
   });
 });
+
+// ── ACCORDION ──
+function toggleAcc(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+// ── CHECKLIST ──
+const checklistKey = 'dive-checklist-v2';
+let checklistState = JSON.parse(localStorage.getItem(checklistKey) || '{}');
+
+document.querySelectorAll('.checklist li').forEach((item, index) => {
+  const phase = item.closest('ul')?.dataset?.phase || 'general';
+  const id = phase + '-' + index;
+  if (checklistState[id]) item.classList.add('done');
+  item.addEventListener('click', function() {
+    const key = this.closest('ul')?.dataset?.phase + '-' + Array.from(this.parentNode.children).indexOf(this);
+    this.classList.toggle('done');
+    checklistState[key] = this.classList.contains('done');
+    localStorage.setItem(checklistKey, JSON.stringify(checklistState));
+    updateProgress();
+  });
+});
+
+function updateProgress() {
+  const all = document.querySelectorAll('.checklist li');
+  const done = document.querySelectorAll('.checklist li.done');
+  const pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+  const bar = document.getElementById('progressBar');
+  const text = document.getElementById('progressText');
+  if (bar) bar.style.width = pct + '%';
+  if (text) text.textContent = done.length + ' / ' + all.length + ' completed';
+}
+updateProgress();
 </script>
 
 </body>
