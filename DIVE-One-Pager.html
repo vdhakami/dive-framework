@@ -8,7 +8,7 @@
   @page { size: A4; margin: 0; }
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 9.5pt; color: #1a1a2e; line-height: 1.3; width: 210mm; height: 297mm; overflow: hidden; }
-  .page { width: 210mm; height: 297mm; padding: 12mm 14mm; display: flex; flex-direction: column; position: relative; }
+   .page { width: 210mm; height: 297mm; padding: 8mm 12mm; display: flex; flex-direction: column; position: relative; }
   .header { text-align: center; margin-bottom: 3mm; }
   .header h1 { font-size: 22pt; font-weight: 800; letter-spacing: 1px; color: #1a1a2e; }
   .header .subtitle { font-size: 11pt; color: #006DAA; font-weight: 600; letter-spacing: 2px; margin-top: 1mm; }
@@ -24,11 +24,14 @@
   .principle:last-child { border-bottom: none; }
   .principle .num { background: #1a1a2e; color: #fff; border-radius: 50%; width: 5mm; height: 5mm; display: flex; align-items: center; justify-content: center; font-size: 7pt; font-weight: 700; flex-shrink: 0; }
   .principle .text { font-size: 7.5pt; color: #333; }
-   .lifecycle { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5mm; margin-top: 0.5mm; }
-   .phase { background: #E8E8E8; border-radius: 2mm; padding: 1.5mm 2mm; text-align: center; }
+   .lifecycle { display: flex; align-items: stretch; gap: 0; margin-top: 0.5mm; }
+   .phase-wrap { flex: 1; display: flex; align-items: stretch; }
+   .phase { flex: 1; background: #E8E8E8; border-radius: 1.5mm; padding: 1.5mm 2mm; text-align: center; display: flex; flex-direction: column; }
    .phase .name { font-size: 8pt; font-weight: 700; color: #006DAA; }
-   .phase .time { font-size: 6.5pt; color: #888; }
-   .phase .items { font-size: 6pt; color: #333; margin-top: 0.5mm; line-height: 1.3; }
+   .phase .time { font-size: 5.5pt; color: #888; margin-bottom: 0.5mm; }
+   .phase .items { font-size: 5.5pt; color: #333; line-height: 1.4; text-align: left; }
+   .phase .items .item { padding: 0.15mm 0; }
+   .arrow { display: flex; align-items: center; padding: 0 1mm; font-size: 10pt; color: #999; flex-shrink: 0; }
   .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2mm; padding-top: 1.5mm; border-top: 1px solid #ccc; font-size: 6.5pt; color: #888; }
   .footer a { color: #006DAA; text-decoration: none; }
   .badge { display: inline-block; background: #1a1a2e; color: #fff; padding: 0.5mm 2mm; border-radius: 2mm; font-size: 6pt; font-weight: 600; }
@@ -73,14 +76,66 @@
     <!-- RIGHT COLUMN -->
     <div class="col">
       <!-- Lifecycle -->
-      <div class="card" style="flex: 1.5;">
+      <div class="card" style="flex: 2;">
         <h2>Lifecycle Overview</h2>
         <div class="lifecycle">
-          <div class="phase">
-            <div class="name">Diagnose</div>
-            <div class="time">2â€“4 wks</div>
-            <div class="items">Validate problem<br>Data audit &amp; signal<br>Baseline metrics<br>Metric Contract<br>Ethics screen</div>
+          <div class="phase-wrap">
+            <div class="phase">
+              <div class="name">Diagnose</div>
+              <div class="time">2–4 weeks</div>
+              <div class="items">
+                <div class="item">1. Problem Framing</div>
+                <div class="item">2. Data Audit</div>
+                <div class="item">3. Baseline Simple Model</div>
+                <div class="item">4. Contract Metric Contract</div>
+                <div class="item">5. Gate Go/No-Go</div>
+              </div>
+            </div>
           </div>
+          <div class="arrow">→</div>
+          <div class="phase-wrap">
+            <div class="phase">
+              <div class="name">Iterate</div>
+              <div class="time">4–8 weeks</div>
+              <div class="items">
+                <div class="item">1. Parallel Experiments</div>
+                <div class="item">2. Compute Budgets</div>
+                <div class="item">3. Weekly Dashboards</div>
+                <div class="item">4. Track Burn Rate</div>
+                <div class="item">5. Select Winner</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="phase-wrap">
+            <div class="phase">
+              <div class="name">Validate</div>
+              <div class="time">2–4 weeks</div>
+              <div class="items">
+                <div class="item">1. Hold-out Eval</div>
+                <div class="item">2. Bias &amp; Fairness</div>
+                <div class="item">3. Edge Case Tests</div>
+                <div class="item">4. Stakeholder Demo</div>
+                <div class="item">5. Go/No-Go</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="phase-wrap">
+            <div class="phase">
+              <div class="name">Evolve</div>
+              <div class="time">Ongoing</div>
+              <div class="items">
+                <div class="item">1. Deploy + Monitor</div>
+                <div class="item">2. Drift Tracking</div>
+                <div class="item">3. Auto-Alerting</div>
+                <div class="item">4. Retrain Cycles</div>
+                <div class="item">5. Quarterly Review</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
           <div class="phase">
             <div class="name">Iterate</div>
             <div class="time">4â€“8 wks</div>
