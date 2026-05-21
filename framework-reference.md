@@ -202,4 +202,4 @@ GPU time, API tokens, and data storage costs dominate AI project budgets. DIVE t
 ---
 
 *DIVE Framework -- Copyright (c) 2026 Vahid Hakami. All rights reserved.*
-*SSRN Abstract ID: 6806018 — https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6806018*
+*SSRN Abstract ID: 6806018 (pending publication)*

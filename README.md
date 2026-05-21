@@ -65,7 +65,6 @@ Traditional project management frameworks (PMBOK, PRINCE2, Agile) assume determi
 ├── DIVE-Implementation-Guide.html # Interactive implementation guide
 ├── DIVE-One-Pager.html / .pdf   # Single-page visual summary
 ├── DIVE-Presentation.pptx       # Slide deck
-├── DIVE-White-Paper.pdf         # Academic white paper (SSRN: 6806018)
 └── assets/
     ├── DIVE-Logo.svg
     └── DIVE-Logo-Horizontal.svg
@@ -78,7 +77,7 @@ Traditional project management frameworks (PMBOK, PRINCE2, Agile) assume determi
 1. **Read the framework** — start with `framework-reference.md`
 2. **Explore the interactive guide** — open `DIVE-Implementation-Guide.html` for phase walkthroughs, diagrams, and checklist
 3. **Download the slide deck** — `DIVE-Presentation.pptx` for team onboarding
-4. **Read the white paper** — `DIVE-White-Paper.pdf` or SSRN Abstract ID: 6806018
+4. **Read the white paper** — see SSRN Abstract ID: 6806018 (pending publication)
 
 ---
 
@@ -94,7 +93,7 @@ This work is licensed under [CC BY-ND 4.0](https://creativecommons.org/licenses/
 
 If you reference this framework in academic or professional work:
 
-> Vahid Hakami. (2026). *DIVE: A Project Management Framework for Artificial Intelligence Initiatives*. SSRN Abstract ID: 6806018. Available: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6806018
+> Vahid Hakami. (2026). *DIVE: A Project Management Framework for Artificial Intelligence Initiatives*. SSRN Abstract ID: 6806018 (pending publication).
 
 ---
 
